@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Atelier du Terroir</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700&family=Noto+Sans+TC:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              bg: '#F8F4E8',
+              surface: '#EAD7B2',
+              text: '#22261A',
+              ink: '#171A11',
+              dark: '#171A11',
+              muted: '#4F583B',
+              accent: '#D9A450',
+              accent_hover: '#F4B840',
+              // Olive Grove Design Tokens
+              olive_border: 'rgba(79, 88, 59, 0.25)',
+              olive_divider: 'rgba(79, 88, 59, 0.18)',
+              olive_muted: 'rgba(79, 88, 59, 0.85)',
+              olive_hint: 'rgba(79, 88, 59, 0.65)',
+              olive_disabled: 'rgba(79, 88, 59, 0.45)',
+            },
+            fontFamily: {
+              serif: ['"Noto Serif TC"', 'serif'],
+              sans: ['"Noto Sans TC"', 'sans-serif'],
+            },
+            spacing: {
+              '128': '32rem',
+            }
+          }
+        }
+      }
+    </script>
+    <style>
+      :root {
+        /* 定義最終對齊線（視覺）與感應線（邏輯） */
+        --visualLineTop: 245px; /* 預設值，會被 JS 更新 */
+        --spyLineTop: 213px;    /* 預設值，會被 JS 更新 */
+        --safeGap: 40px;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+      .no-scrollbar::-webkit-scrollbar {
+        display: none;
+      }
+      .no-scrollbar {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+      }
+      /* 使用視覺對齊線處理捲動偏移 */
+      .jump-anchor {
+        scroll-margin-top: var(--visualLineTop);
+      }
+    </style>
+  <script type="importmap">
+{
+  "imports": {
+    "react": "https://esm.sh/react@^19.2.3",
+    "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
+    "react/": "https://esm.sh/react@^19.2.3/",
+    "lucide-react": "https://esm.sh/lucide-react@^0.563.0"
+  }
+}
+</script>
+<link rel="stylesheet" href="/index.css">
+</head>
+  <body class="bg-bg text-text antialiased font-sans">
+    <div id="root"></div>
+  <script type="module" src="/index.tsx"></script>
+</body>
+</html>

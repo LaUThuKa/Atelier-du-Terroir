@@ -1,0 +1,169 @@
+import { Theme } from '../types';
+
+export const THEMES: Theme[] = [
+  {
+    id: 'white-sauce',
+    name: '白醬主力',
+    tagline: '奶香基底，素食飽足',
+    imageKey: 110,
+    dishes: [
+      {
+        id: 'dish-ws-1',
+        title: '松露白醬燉飯',
+        sentenceA: '濃郁奶香與黑松露的極致交響',
+        sentenceB: '選用義大利陳年米，口感彈牙帶勁',
+        laitStructure: {
+          base: '北海道3.6牛乳',
+          note: '帕達諾起司刨絲',
+          finish: '白松露油點綴',
+        },
+        imageKey: 101,
+        badges: ['人氣 No.1', '蛋奶素'],
+      },
+      {
+        id: 'dish-ws-2',
+        title: '奶油野菇筆管麵',
+        sentenceA: '多種野菇低溫煸炒釋放鮮味',
+        sentenceB: '特製白醬緊緊吸附每一根筆管麵',
+        laitStructure: {
+          base: '法式酸奶油基底',
+          note: '綜合野菇精華',
+          finish: '新鮮百里香',
+        },
+        imageKey: 102,
+        badges: ['經典', '飽足感'],
+      },
+    ],
+  },
+  {
+    id: 'double-sauce',
+    name: '雙醬進化',
+    tagline: '酸香草本，平衡不膩',
+    imageKey: 210,
+    dishes: [
+      {
+        id: 'dish-ds-1',
+        title: '青醬白醬雙重奏',
+        sentenceA: '羅勒清香與濃郁奶醬的完美平衡',
+        sentenceB: '一次品嚐兩種層次的味覺饗宴',
+        laitStructure: {
+          base: '自製羅勒青醬',
+          note: '經典白醬調和',
+          finish: '烘烤松子碎',
+        },
+        imageKey: 201,
+        badges: ['主廚推薦'],
+      },
+    ],
+  },
+  {
+    id: 'baked-rich',
+    name: '濃郁焗香',
+    tagline: '焗烤濃縮，起司厚香',
+    imageKey: 310,
+    dishes: [
+      {
+        id: 'dish-br-1',
+        title: '經典焗烤千層麵',
+        sentenceA: '層層堆疊的麵皮與豐富內餡',
+        sentenceB: '高溫烘烤出金黃酥脆的起司外皮',
+        laitStructure: {
+          base: '波隆那肉醬(素)',
+          note: '莫札瑞拉起司',
+          finish: '帕瑪森起司粉',
+        },
+        imageKey: 301,
+        badges: ['限量', '現點現做'],
+      },
+      {
+        id: 'dish-br-2',
+        title: '海鮮焗烤通心粉',
+        sentenceA: '鮮甜海味鎖在濃郁白醬之中',
+        sentenceB: '每一口都充滿大海與牧場的風味',
+        laitStructure: {
+          base: '海鮮高湯白醬',
+          note: '雙色切達起司',
+          finish: '歐芹碎',
+        },
+        imageKey: 302,
+        badges: ['海鮮控必點'],
+      },
+    ],
+  },
+  {
+    id: 'art-signature',
+    name: '藝術招牌',
+    tagline: '技術與敘事的展示',
+    imageKey: 410,
+    dishes: [
+      {
+        id: 'dish-as-1',
+        title: '花園沙拉佐慕斯',
+        sentenceA: '宛如盤中花園的視覺藝術',
+        sentenceB: '細緻慕斯口感搭配爽脆生菜',
+        laitStructure: {
+          base: '甜菜根慕斯',
+          note: '季節食用花',
+          finish: '巴薩米克醋膏',
+        },
+        imageKey: 401,
+        badges: ['視覺饗宴', '輕食'],
+      },
+    ],
+  },
+  {
+    id: 'pure-milk',
+    name: '純奶甜點',
+    tagline: '清爽與濃郁雙線',
+    imageKey: 510,
+    dishes: [
+      {
+        id: 'dish-pm-1',
+        title: '北海道生乳捲',
+        sentenceA: '空氣般輕盈的蛋糕體',
+        sentenceB: '入口即化的頂級生乳內餡',
+        laitStructure: {
+          base: '舒芙蕾蛋糕體',
+          note: '北海道十勝鮮乳',
+          finish: '糖霜如雪',
+        },
+        imageKey: 501,
+        badges: ['每日限量'],
+      },
+      {
+        id: 'dish-pm-2',
+        title: '焦糖鮮奶布丁',
+        sentenceA: '苦甜焦糖襯托濃郁蛋奶香',
+        sentenceB: '滑順口感帶來最純粹的幸福',
+        laitStructure: {
+          base: '手炒焦糖液',
+          note: '有機雞蛋布丁',
+          finish: '香草籽點綴',
+        },
+        imageKey: 502,
+        badges: ['經典甜品'],
+      },
+    ],
+  },
+  {
+    id: 'cheese-share',
+    name: '起司分享',
+    tagline: '杯裝與分享盤收尾',
+    imageKey: 610,
+    dishes: [
+      {
+        id: 'dish-cs-1',
+        title: '綜合起司拼盤',
+        sentenceA: '精選三種不同熟成度的起司',
+        sentenceB: '適合搭配紅酒與好友一同分享',
+        laitStructure: {
+          base: '布利起司',
+          note: '藍紋起司',
+          finish: '煙燻起司',
+        },
+        imageKey: 601,
+        badges: ['適合分享'],
+      },
+    ],
+  },
+];
