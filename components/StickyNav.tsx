@@ -1,4 +1,6 @@
+
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { ExternalLink } from 'lucide-react';
 import { Theme } from '../types';
 
@@ -20,10 +22,6 @@ const StickyNav: React.FC<StickyNavProps> = ({
       className="sticky z-30 h-fit"
       style={{ top: 'var(--tabsBottom, 112px)' }}
     >
-      {/* 
-          使用 var(--safeGap) 作為 mt，
-          確保「主題索引」文字與左側內容區塊的主標題在捲動後處於同一水平線 
-      */}
       <div 
         className="bg-surface/10 backdrop-blur-[2px] border-l-[3px] border-accent rounded-r-2xl p-10 flex flex-col gap-10"
         style={{ marginTop: 'var(--safeGap, 40px)' }}
@@ -99,16 +97,16 @@ const StickyNav: React.FC<StickyNavProps> = ({
            </h5>
            <ul className="space-y-4">
              <li>
-               <a href="#full-list" className={`flex items-center justify-between text-[12px] text-text font-medium hover:text-accent transition-colors group rounded-md p-1 ${focusRing}`}>
+               <Link to={`/themes/${currentTheme.id}`} className={`flex items-center justify-between text-[12px] text-text font-medium hover:text-accent transition-colors group rounded-md p-1 ${focusRing}`}>
                  <span>本主題全部作品</span>
                  <ExternalLink size={12} className="text-olive_hint group-hover:text-accent group-hover:-translate-y-0.5 group-hover:translate-x-0.5 transition-all" />
-               </a>
+               </Link>
              </li>
              <li>
-               <a href="#catalog" className={`flex items-center justify-between text-[12px] text-text font-medium hover:text-accent transition-colors group rounded-md p-1 ${focusRing}`}>
+               <Link to="/catalog" className={`flex items-center justify-between text-[12px] text-text font-medium hover:text-accent transition-colors group rounded-md p-1 ${focusRing}`}>
                  <span>完整作品目錄</span>
                  <ExternalLink size={12} className="text-olive_hint group-hover:text-accent group-hover:-translate-y-0.5 group-hover:translate-x-0.5 transition-all" />
-               </a>
+               </Link>
              </li>
            </ul>
         </div>

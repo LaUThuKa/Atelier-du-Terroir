@@ -12,6 +12,8 @@ export interface Dish {
   laitStructure: LaitStructure;
   imageKey: number; // For picsum randomness
   badges: string[];
+  is_featured?: boolean; // 新增：是否為精選
+  order?: number;        // 新增：排序權重
 }
 
 export interface Theme {

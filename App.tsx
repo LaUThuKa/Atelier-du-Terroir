@@ -1,10 +1,13 @@
 import React, { useState, useEffect, useRef, useCallback, useLayoutEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { THEMES } from './data/content';
 import { Theme } from './types';
 import DishCard from './components/DishCard';
 import Button from './components/Button';
 import StickyNav from './components/StickyNav';
 import MobileNav from './components/MobileNav';
+import NeutralHero from './components/NeutralHero';
+import ScrollToTop from './components/ScrollToTop';
 import { Menu, ArrowRight } from 'lucide-react';
 
 /**
@@ -110,7 +113,6 @@ const App: React.FC = () => {
     let targetElement: HTMLElement | null = null;
 
     if (id === 'editor-note') {
-      // 00 保持獨立規則：手動計算 offset 跳轉
       targetElement = document.getElementById('editor-note');
       if (targetElement) {
         const rect = targetElement.getBoundingClientRect();
@@ -119,12 +121,14 @@ const App: React.FC = () => {
         return;
       }
     } else if (id.startsWith('dish-')) {
-      // 01, 02 遵從元件內部的補償規則
       const index = id.split('-')[1];
       targetElement = document.getElementById(`dish-${index}`);
       if (targetElement) {
         const rect = targetElement.getBoundingClientRect();
-        window.scrollTo({ top: rect.top + window.scrollY, behavior: 'smooth' });
+        // ✅ 修正：手動減去 visualLineTop 偏移量
+        // 因為 DishCard 不再帶有負 margin 補償，這裡必須顯式計算
+        const y = rect.top + window.scrollY - visualLineTop;
+        window.scrollTo({ top: y, behavior: 'smooth' });
       }
     }
   };
@@ -201,6 +205,7 @@ const App: React.FC = () => {
 
   return (
     <div className="bg-bg min-h-screen text-text selection:bg-surface selection:text-ink pb-20 lg:pb-0">
+      <ScrollToTop />
       
       {/* 紅線組件 (已關閉) */}
       {DEBUG_SPYLINE && (
@@ -230,22 +235,11 @@ const App: React.FC = () => {
       </header>
 
       <main className="pt-14 lg:pt-16">
-        <section className="relative w-full h-[180px] lg:h-[280px] bg-ink overflow-hidden">
-          <img 
-            src="https://picsum.photos/seed/hero-bg/1920/600" 
-            alt="Hero Background" 
-            className="w-full h-full object-cover opacity-60"
-          />
-          <div className="absolute inset-0 bg-gradient-to-b from-ink/20 to-ink/60"></div>
-          <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-4">
-            <h1 className="text-bg font-serif text-2xl lg:text-4xl font-bold mb-3 drop-shadow-md max-w-2xl leading-tight tracking-wide">
-              土壤到餐桌的藝術敘事
-            </h1>
-            <p className="text-surface/90 font-sans text-xs lg:text-sm mb-4 tracking-[0.4em] uppercase font-medium">
-              Pure Lait Experience
-            </p>
-          </div>
-        </section>
+        {/* [R01-2] 使用共用 NeutralHero */}
+        <NeutralHero 
+          title="土壤到餐桌的藝術敘事" 
+          subtitle="Pure Lait Experience" 
+        />
 
         <section id="theme-tabs" className="sticky top-14 lg:top-16 z-40 bg-bg shadow-[0_1px_3px_rgba(79,88,59,0.1)] border-b border-olive_divider/10">
           <div className="max-w-[1200px] mx-auto px-4">
@@ -319,16 +313,21 @@ const App: React.FC = () => {
                  <DishCard key={`${currentTheme.id}-${dish.id}`} dish={dish} index={index} />
                ))}
                
-               <div className="border-t border-olive_divider pt-12 pb-8 flex flex-col sm:flex-row gap-6 justify-center items-center">
-                 <a href="#full-list" className="flex items-center gap-2 text-text hover:text-accent font-semibold transition-colors border-b-2 border-transparent hover:border-accent pb-1 rounded-md px-1">
-                   查看本主題全部作品
-                   <ArrowRight size={18} />
-                 </a>
-                 <span className="hidden sm:block text-olive_disabled text-lg">/</span>
-                 <a href="#catalog" className="flex items-center gap-2 text-text hover:text-accent font-semibold transition-colors border-b-2 border-transparent hover:border-accent pb-1 rounded-md px-1">
-                   完整作品目錄
-                   <ArrowRight size={18} />
-                 </a>
+               {/* [UI-03] 主題底部導流：改用 text variant Button 以降低視覺強度，並維持分隔符 */}
+               <div className="border-t border-olive_divider pt-12 pb-8 flex flex-col sm:flex-row gap-2 sm:gap-6 justify-center items-center">
+                 <Link to={`/themes/${currentTheme.id}`}>
+                   <Button variant="text" className="gap-2 px-4 py-2 text-base">
+                     查看本主題全部作品
+                     <ArrowRight size={18} />
+                   </Button>
+                 </Link>
+                 <span className="hidden sm:block text-olive_disabled text-lg" aria-hidden="true">/</span>
+                 <Link to="/catalog">
+                   <Button variant="text" className="gap-2 px-4 py-2 text-base">
+                     完整作品目錄
+                     <ArrowRight size={18} />
+                   </Button>
+                 </Link>
                </div>
             </section>
           </div>

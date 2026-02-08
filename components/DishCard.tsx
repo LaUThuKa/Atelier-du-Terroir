@@ -14,12 +14,9 @@ const DishCard: React.FC<DishCardProps> = ({ dish, index }) => {
   return (
     <section 
       id={`dish-${index}`} 
-      className="relative"
-      style={{
-        // ✅ 使用視覺基準線進行補償，確保跳轉後留白為 40px (SAFE_GAP)
-        paddingTop: 'var(--visualLineTop)',
-        marginTop: 'calc(var(--visualLineTop) * -1)',
-      }}
+      // ✅ 移除 style 中的負邊距補償，改用 CSS class 控制 scroll-margin-top
+      // ✅ 這樣做可以確保區塊不會在視覺上「越位」覆蓋到上一個區塊的點擊區域
+      className="relative jump-anchor"
     >
       {/* Spy 錨點：僅用於判定觸發，與視覺補償無關 */}
       <div
@@ -85,15 +82,15 @@ const DishCard: React.FC<DishCardProps> = ({ dish, index }) => {
           {/* CTA Group */}
           <div className="flex flex-col sm:flex-row gap-4 mt-auto">
             <Button 
-              className="flex-1 sm:flex-none gap-2 px-8 font-bold"
+              className="flex-1 sm:flex-none gap-2 px-8"
               onClick={() => window.location.href = 'tel:+1234567890'}
             >
               <Phone size={18} />
               品鑑洽詢
             </Button>
             <Button 
-              variant="outline" 
-              className="flex-1 sm:flex-none gap-2 px-8 font-bold"
+              variant="ghost" 
+              className="flex-1 sm:flex-none gap-2 px-8"
               onClick={() => window.location.href = 'mailto:info@atelier.com'}
             >
               合作邀約

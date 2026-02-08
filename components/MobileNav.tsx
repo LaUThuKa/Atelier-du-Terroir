@@ -1,4 +1,6 @@
+
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { ArrowUp, ChevronLeft, ChevronRight, Menu, X, ExternalLink } from 'lucide-react';
 import { Theme } from '../types';
 
@@ -26,7 +28,6 @@ const MobileNav: React.FC<MobileNavProps> = ({
   }, [currentTheme.id]);
 
   const handleNavClick = (id: string) => {
-    // 呼叫父組件傳入的 handleNavigate，會自動執行 scrollToAnchor 並處理狀態鎖定
     onNavigate(id);
     setIsOpen(false);
   };
@@ -115,16 +116,16 @@ const MobileNav: React.FC<MobileNavProps> = ({
                 <h5 className="text-xs font-bold uppercase tracking-[0.3em] text-olive_muted">Explore</h5>
                 <ul className="space-y-4">
                   <li>
-                    <a href="#full-list" className={`flex items-center justify-between text-lg text-text font-semibold rounded-md p-1 ${focusRing}`}>
+                    <Link to={`/themes/${currentTheme.id}`} className={`flex items-center justify-between text-lg text-text font-semibold rounded-md p-1 ${focusRing}`}>
                       查看本主題全部作品
                       <ExternalLink size={18} className="text-olive_hint" />
-                    </a>
+                    </Link>
                   </li>
                   <li>
-                    <a href="#catalog" className={`flex items-center justify-between text-lg text-text font-semibold rounded-md p-1 ${focusRing}`}>
+                    <Link to="/catalog" className={`flex items-center justify-between text-lg text-text font-semibold rounded-md p-1 ${focusRing}`}>
                       完整作品目錄
                       <ExternalLink size={18} className="text-olive_hint" />
-                    </a>
+                    </Link>
                   </li>
                 </ul>
               </div>
