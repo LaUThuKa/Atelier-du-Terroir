@@ -7,7 +7,11 @@
     "dev": "vite",
     "build": "vite build",
     "build:gh": "VITE_BASE=/Atelier-du-Terroir/ vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "lint:portable": "node scripts/check-portable.mjs",
+    "lint:drift": "node scripts/check-drift.mjs",
+    "lint:importmap": "node scripts/check-importmap.mjs",
+    "precommit": "npm run lint:portable && npm run lint:drift && npm run lint:importmap"
   },
   "dependencies": {
     "lucide-react": "^0.563.0",
