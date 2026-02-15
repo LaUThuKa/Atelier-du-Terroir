@@ -1,15 +1,322 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
   <head>
+    <script>
+      /**
+       * [Ticket A01-T08] Token Hard Lock & Diagnostics Badge
+       * 修復：增加 PROFILE / SOURCE / HASH 三大驗收指標
+       * [Ticket A01-T11a] 新增 Footer 診斷段落
+       */
+      (function AT_GuardrailSystem() {
+        const PROFILE = "A01-A_THEME_V1";
+        const TOKENS_SOURCE = "AT_TOKENS_INLINE";
+        const HASH_KEYS = ["--bg", "--surface", "--card", "--border", "--accent", "--accentHover", "--heading", "--text", "--ink", "--muted"];
+
+        // FNV-1a 32bit Hash 穩定算法
+        function fnv1a(str) {
+          let hval = 0x811c9dc5;
+          for (let i = 0; i < str.length; i++) {
+            hval ^= str.charCodeAt(i);
+            hval += (hval << 1) + (hval << 4) + (hval << 7) + (hval << 8) + (hval << 24);
+          }
+          return (hval >>> 0).toString(16).padStart(8, "0").toUpperCase();
+        }
+
+        function calculateTokensHash() {
+          const style = getComputedStyle(document.documentElement);
+          const values = HASH_KEYS.map(k => style.getPropertyValue(k).trim()).join("|");
+          return fnv1a(values);
+        }
+
+        // [Ticket A01-T11a] 檢查 CSS 規則是否存在
+        function hasCssRule(sel) {
+          try {
+            for (const sheet of document.styleSheets) {
+              let rules; try { rules = sheet.cssRules; } catch (e) { continue; }
+              if (!rules) continue;
+              for (const r of rules) if (r.selectorText === sel) return true;
+            }
+          } catch (e) {}
+          return false;
+        }
+
+        // 1. 定義受保護的語意 Token 集合
+        const AT_SEMANTIC_KEYS = new Set([
+          ...HASH_KEYS,
+          "--vanilla", "--wheat", "--olive", "--amber", "--sun", "--footerDeep"
+        ]);
+
+        // 2. 初始化 Token 狀態
+        window.__AT_TOKENS__ = { 
+          activeWriter: null, 
+          violations: 0, 
+          lastKey: "", 
+          lastValue: "" 
+        };
+
+        // 3. 攔截 setProperty (白名單制 Hard Lock)
+        const originalSetProperty = CSSStyleDeclaration.prototype.setProperty;
+        CSSStyleDeclaration.prototype.setProperty = function(prop, val, priority) {
+          if (this === document.documentElement.style && AT_SEMANTIC_KEYS.has(prop)) {
+            const currentWriter = window.__AT_CURRENT_WRITER__ || "UNKNOWN_SOURCE";
+            if (!window.__AT_TOKENS__.activeWriter) {
+              window.__AT_TOKENS__.activeWriter = currentWriter;
+            }
+            if (window.__AT_TOKENS__.activeWriter !== currentWriter) {
+              window.__AT_TOKENS__.violations++;
+              window.__AT_TOKENS__.lastKey = prop;
+              window.__AT_TOKENS__.lastValue = val;
+              console.warn(`[AT_TOKENS_LOCK] BLOCKED DRIFT: ${currentWriter} tried to write ${prop}=${val}`);
+              return; 
+            }
+          }
+          return originalSetProperty.apply(this, arguments);
+        };
+
+        const getDebugState = () => {
+          try {
+            const qs = new URLSearchParams(window.location.search);
+            return qs.has("debug") || localStorage.getItem("AT_DEBUG") === "1";
+          } catch(e) { return false; }
+        };
+
+        const unlockAction = () => {
+          try { localStorage.setItem("AT_DEBUG", "1"); } catch(e){}
+          showHUD();
+          showDebugBadge();
+        };
+
+        function showHUD() {
+          if (document.getElementById("at-diag-hud")) return;
+          const hud = document.createElement("div");
+          hud.id = "at-diag-hud";
+          hud.style.cssText = [
+            "position:fixed",
+            "left:12px",
+            "bottom:12px",
+            "z-index:999999",
+            "padding:10px 12px",
+            "border-radius:12px",
+            "background:rgba(0,0,0,.9)",
+            "color:#fff",
+            "font:11px/1.4 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace",
+            "max-width:320px",
+            "box-shadow: 0 4px 24px rgba(0,0,0,0.4)",
+            "border: 1px solid rgba(255,255,255,0.15)",
+            "white-space:pre-wrap"
+          ].join(";");
+
+          const btnGroup = document.createElement("div");
+          btnGroup.style.cssText = "display:flex;gap:6px;margin-bottom:10px;";
+          
+          const closeBtn = document.createElement("button");
+          closeBtn.textContent = "✕ CLOSE HUD";
+          closeBtn.style.cssText = "flex:1;padding:5px;background:#D9A450;color:#171A11;border:none;border-radius:4px;font-weight:bold;cursor:pointer;font-size:10px;";
+          closeBtn.onclick = () => {
+            try { localStorage.removeItem("AT_DEBUG"); } catch(e){}
+            hud.remove();
+            const badge = document.getElementById("tw-surface-test");
+            if (badge) badge.remove();
+          };
+
+          const testBtn = document.createElement("button");
+          testBtn.textContent = "⚠ DRIFT TEST";
+          testBtn.style.cssText = "flex:1;padding:5px;background:#ef4444;color:#fff;border:none;border-radius:4px;font-weight:bold;cursor:pointer;font-size:10px;";
+          testBtn.onclick = () => {
+            window.__AT_CURRENT_WRITER__ = "MALICIOUS_SCRIPT";
+            document.documentElement.style.setProperty("--accent", "255 0 0");
+            window.__AT_CURRENT_WRITER__ = null;
+          };
+
+          btnGroup.appendChild(closeBtn);
+          btnGroup.appendChild(testBtn);
+          hud.appendChild(btnGroup);
+
+          const content = document.createElement("div");
+          content.id = "at-diag-content";
+          hud.appendChild(content);
+
+          document.body.appendChild(hud);
+
+          const getVar = (n) => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+
+          setInterval(() => {
+            const el = document.querySelector("#cta-tasting") || document.querySelector(".bg-accent");
+            const info = el ? { tag: el.tagName, bg: getComputedStyle(el).backgroundColor } : { tag: "N/A", bg: "N/A" };
+            const tok = window.__AT_TOKENS__;
+            const currentHash = calculateTokensHash();
+            
+            // [Ticket A01-T11a] Footer 診斷邏輯
+            const footerEl = document.querySelector('footer');
+            const footerDiag = footerEl ? {
+              tag: footerEl.tagName,
+              bg: getComputedStyle(footerEl).backgroundColor,
+              text: getComputedStyle(footerEl).color,
+              borderTop: getComputedStyle(footerEl).borderTopColor
+            } : null;
+
+            content.textContent = `[ DIAGNOSTICS BADGE ]
+PROFILE: ${PROFILE}
+SOURCE:  ${TOKENS_SOURCE}
+HASH:    ${currentHash}
+
+TOKENS_GUARD:
+  LOCK: ${tok.activeWriter ? "LOCKED" : "WAITING"}
+  VIOLATIONS: ${tok.violations}
+  LAST_BLOCKED: ${tok.lastKey || "NONE"}
+
+VARS:
+  --bg: ${getVar("--bg")}
+  --accent: ${getVar("--accent")}
+  --surface: ${getVar("--surface")}
+
+ELEMENT [${info.tag}]:
+  bg: ${info.bg}
+
+FOOTER:
+  selector: ${footerDiag ? footerDiag.tag : "NONE"}
+  classRule:
+    .bg-footerDeep: ${hasCssRule(".bg-footerDeep") ? "YES" : "NO"}
+    .text-vanilla: ${hasCssRule(".text-vanilla") ? "YES" : "NO"}
+    .border-olive_divider: ${hasCssRule(".border-olive_divider") ? "YES" : "NO"}
+  computed:
+    bg: ${footerDiag ? footerDiag.bg : "(none)"}
+    text: ${footerDiag ? footerDiag.text : "(none)"}
+    borderTop: ${footerDiag ? footerDiag.borderTop : "(none)"}
+
+STATUS: ${tok.violations > 0 ? "DRIFT_BLOCKED" : "STABLE"}`;
+          }, 500);
+        }
+
+        function showDebugBadge() {
+          if (document.getElementById("tw-surface-test")) return;
+          const testEl = document.createElement("div");
+          testEl.id = "tw-surface-test";
+          testEl.className = "bg-surface text-muted";
+          testEl.style.cssText = "position:fixed;right:12px;bottom:12px;padding:6px 10px;border-radius:10px;z-index:999998;font-size:10px;font-weight:bold;border:1px solid rgba(79,88,59,0.2);box-shadow:0 2px 8px rgba(0,0,0,0.1);pointer-events:none;";
+          testEl.textContent = "DEBUG ACTIVE";
+          document.body.appendChild(testEl);
+        }
+
+        if (getDebugState()) {
+          document.addEventListener("DOMContentLoaded", () => {
+            showHUD();
+            showDebugBadge();
+          });
+        }
+
+        const bindGesture = () => {
+          const target = document.querySelector('[data-at-logo="1"]') || document.querySelector('header a') || document.querySelector('header');
+          if (!target) { setTimeout(bindGesture, 500); return; }
+          if (target.__at_debug_bound) return;
+          target.__at_debug_bound = true;
+          let clickCount = 0, lastClick = 0, pressTimer;
+          const handleStart = () => { pressTimer = setTimeout(unlockAction, 2000); };
+          const handleEnd = () => clearTimeout(pressTimer);
+          target.addEventListener("mousedown", handleStart);
+          target.addEventListener("mouseup", handleEnd);
+          target.addEventListener("mouseleave", handleEnd);
+          target.addEventListener("touchstart", handleStart, {passive: true});
+          target.addEventListener("touchend", handleEnd);
+          target.addEventListener("click", () => {
+            const now = Date.now();
+            if (now - lastClick > 3000) clickCount = 0;
+            clickCount++;
+            lastClick = now;
+            if (clickCount >= 7) { clickCount = 0; unlockAction(); }
+          });
+        };
+
+        if (document.readyState === 'loading') {
+          document.addEventListener("DOMContentLoaded", bindGesture);
+        } else {
+          bindGesture();
+        }
+      })();
+    </script>
+
+    <!-- [Ticket A01-T05] BASE-EC: Semantic Token Card Expansion -->
+    <script>
+      window.AT_TOKENS_INLINE = {
+        colors: {
+          vanilla: "#F8F4E8",
+          wheat: "#EAD7B2",
+          olive: "#4F583B",
+          amber: "#D9A450", 
+          sun: "#F4B840",
+          footerDeep: "#1E2115",
+          ink: "#171A11",
+          text: "#22261A"
+        }
+      };
+    </script>
+    <script>
+      (function applyTokensSingleWriter() {
+        // [Ticket A01-T07] 標記目前寫入者，啟動 Hard Lock
+        window.__AT_CURRENT_WRITER__ = "AT_TOKENS_INLINE";
+
+        const root = document.documentElement;
+        const TOK = window.AT_TOKENS_INLINE;
+        const c = TOK.colors;
+
+        const toRgbTriplet = (hex) => {
+          const h = String(hex).replace("#", "").trim();
+          const full = (h.length === 3) ? h.split("").map(ch => ch + ch).join("") : h;
+          const n = parseInt(full, 16);
+          return `${(n >> 16) & 255} ${(n >> 8) & 255} ${n & 255}`;
+        };
+
+        root.style.setProperty("--vanilla", toRgbTriplet(c.vanilla));
+        root.style.setProperty("--wheat", toRgbTriplet(c.wheat));
+        root.style.setProperty("--olive", toRgbTriplet(c.olive));
+        root.style.setProperty("--amber", toRgbTriplet(c.amber));
+        root.style.setProperty("--sun", toRgbTriplet(c.sun));
+        root.style.setProperty("--footerDeep", toRgbTriplet(c.footerDeep));
+        root.style.setProperty("--ink", toRgbTriplet(c.ink));
+        root.style.setProperty("--text", toRgbTriplet(c.text));
+
+        root.style.setProperty("--bg", toRgbTriplet(c.vanilla));
+        root.style.setProperty("--surface", toRgbTriplet(c.wheat)); 
+        root.style.setProperty("--card", toRgbTriplet(c.wheat));
+        root.style.setProperty("--border", toRgbTriplet(c.olive));
+        root.style.setProperty("--muted", toRgbTriplet(c.text));
+        root.style.setProperty("--accent", toRgbTriplet(c.amber));
+        root.style.setProperty("--accentHover", toRgbTriplet(c.sun));
+        root.style.setProperty("--heading", toRgbTriplet(c.ink));
+
+        // 釋放寫入鎖定權限
+        window.__AT_CURRENT_WRITER__ = null;
+      })();
+    </script>
+
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Atelier du Terroir</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <script type="importmap">
+      {
+        "imports": {
+          "react": "https://esm.sh/react@19.2.4",
+          "react/": "https://esm.sh/react@19.2.4/",
+          "react-dom": "https://esm.sh/react-dom@19.2.4?external=react",
+          "react-dom/": "https://esm.sh/react-dom@19.2.4/",
+          "react-dom/client": "https://esm.sh/react-dom@19.2.4/client?external=react",
+          "react-router-dom": "https://esm.sh/react-router-dom@6.22.3?external=react,react-dom",
+          "react-router": "https://esm.sh/react-router@6.22.3?external=react,react-dom",
+          "@remix-run/router": "https://esm.sh/@remix-run/router@1.15.3?external=react,react-dom",
+          "lucide-react": "https://esm.sh/lucide-react@0.564.0?external=react,react-dom",
+          "vite": "https://esm.sh/vite@^7.3.1",
+          "@vitejs/plugin-react": "https://esm.sh/@vitejs/plugin-react@^5.1.4",
+          "fs": "https://esm.sh/fs@^0.0.1-security",
+          "path": "https://esm.sh/path@^0.12.7"
+        }
+      }
+    </script>
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700&family=Noto+Sans+TC:wght@300;400;500;600&display=swap" rel="stylesheet">
     
-    <!-- SPA Redirect Handler for GitHub Pages -->
     <script type="text/javascript">
       (function(l) {
         if (l.search[1] === 'p') {
@@ -27,78 +334,92 @@
       }(window.location))
     </script>
 
+    <script type="module" src="/tokens.js"></script>
+    
     <script>
-      tailwind.config = {
+      window.tailwind = window.tailwind || {};
+      window.tailwind.config = {
         theme: {
           extend: {
             colors: {
-              bg: '#F8F4E8',
-              surface: '#EAD7B2',
-              text: '#22261A',
-              ink: '#171A11',
-              dark: '#171A11',
-              muted: '#4F583B',
-              accent: '#D9A450',
-              accent_hover: '#F4B840',
-              olive_border: 'rgba(79, 88, 59, 0.25)',
-              olive_divider: 'rgba(79, 88, 59, 0.18)',
-              olive_muted: 'rgba(79, 88, 59, 0.85)',
-              olive_hint: 'rgba(79, 88, 59, 0.65)',
-              olive_disabled: 'rgba(79, 88, 59, 0.45)',
+              vanilla: "rgb(var(--vanilla) / <alpha-value>)",
+              wheat: "rgb(var(--wheat) / <alpha-value>)",
+              olive: "rgb(var(--olive) / <alpha-value>)",
+              amber: "rgb(var(--amber) / <alpha-value>)",
+              sun: "rgb(var(--sun) / <alpha-value>)",
+              footerDeep: "rgb(var(--footerDeep) / <alpha-value>)",
+              ink: "rgb(var(--ink) / <alpha-value>)",
+              text: "rgb(var(--text) / <alpha-value>)",
+              bg: "rgb(var(--bg) / <alpha-value>)",
+              surface: "rgb(var(--surface) / <alpha-value>)",
+              muted: "rgb(var(--muted) / <alpha-value>)",
+              accent: "rgb(var(--accent) / <alpha-value>)",
+              accent_hover: "rgb(var(--accentHover) / <alpha-value>)",
+              dark: "rgb(var(--heading) / <alpha-value>)",
+              olive_border: "rgba(79, 88, 59, 0.25)",
+              olive_divider: "rgba(79, 88, 59, 0.18)",
+              olive_muted: "rgba(79, 88, 59, 0.85)",
+              olive_hint: "rgba(79, 88, 59, 0.65)",
+              olive_disabled: "rgba(79, 88, 59, 0.45)",
             },
             fontFamily: {
-              serif: ['"Noto Serif TC"', 'serif'],
-              sans: ['"Noto Sans TC"', 'sans-serif'],
+              serif: ['"Noto Serif TC"', "serif"],
+              sans: ['"Noto Sans TC"', "sans-serif"],
             },
-            spacing: {
-              '128': '32rem',
-            }
-          }
-        }
-      }
+            spacing: { "128": "32rem" },
+          },
+        },
+      };
     </script>
-    <style>
-      :root {
-        --visualLineTop: 245px;
-        --spyLineTop: 213px;
-        --safeGap: 40px;
-      }
 
-      html {
-        scroll-behavior: smooth;
-      }
-      .no-scrollbar::-webkit-scrollbar {
-        display: none;
-      }
-      .no-scrollbar {
-        -ms-overflow-style: none;
-        scrollbar-width: none;
-      }
-      .jump-anchor {
-        scroll-margin-top: var(--visualLineTop);
-      }
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <script>
+      (function twFallbackAccentIfMissing() {
+        function hasSelector(sel) {
+          for (const sheet of document.styleSheets) {
+            let rules; try { rules = sheet.cssRules; } catch { continue; }
+            if (!rules) continue;
+            for (const r of rules) if (r.selectorText === sel) return true;
+          }
+          return false;
+        }
+
+        setTimeout(() => {
+          if (hasSelector(".bg-accent")) return;
+          const style = document.createElement("style");
+          style.id = "tw-fallback-accent";
+          style.textContent = `
+            .bg-bg{background-color:rgb(var(--bg) / 1) !important}
+            .bg-accent{background-color:rgb(var(--accent) / 1) !important}
+            .bg-surface{background-color:rgb(var(--surface) / 1) !important}
+            .bg-card{background-color:rgb(var(--card) / 1) !important}
+            .text-text{color:rgb(var(--text) / 1) !important}
+            .text-ink{color:rgb(var(--ink) / 1) !important}
+            .text-dark{color:rgb(var(--heading) / 1) !important}
+            .text-muted{color:rgb(var(--muted) / 0.72) !important}
+            .border-olive_border{border-color:rgb(var(--olive) / 0.25) !important}
+            .bg-footerDeep{background-color:rgb(var(--footerDeep) / 1) !important}
+            .text-vanilla{color:rgb(var(--vanilla) / 1) !important}
+            .border-olive_divider{border-color:rgba(var(--olive) / 0.18) !important}
+            .text-olive_hint{color:rgba(var(--olive) / 0.65) !important}
+          `;
+          document.head.appendChild(style);
+        }, 0);
+      })();
+    </script>
+
+    <style id="at-global-base">
+      :root { color-scheme: light; }
+      body { background-color: rgb(var(--bg) / 1); color: rgb(var(--text) / 1); }
+      h1, h2, h3, h4, h5, h6 { color: rgb(var(--heading) / 1); }
     </style>
-  <script type="importmap">
-{
-  "imports": {
-    "react": "https://esm.sh/react@^19.2.3",
-    "react-dom": "https://esm.sh/react-dom@^19.2.3",
-    "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
-    "react/": "https://esm.sh/react@^19.2.3/",
-    "lucide-react": "https://esm.sh/lucide-react@^0.563.0",
-    "react-router-dom": "https://esm.sh/react-router-dom@^6.22.3",
-    "react-router": "https://esm.sh/react-router@^6.22.3",
-    "@remix-run/router": "https://esm.sh/@remix-run/router@^1.15.3",
-    "vite": "https://esm.sh/vite@^7.3.1",
-    "@vitejs/plugin-react": "https://esm.sh/@vitejs/plugin-react@^5.1.3"
-  }
-}
-</script>
+
 <link rel="stylesheet" href="/index.css">
 </head>
   <body class="bg-bg text-text antialiased font-sans">
     <div id="root"></div>
-    <!-- 只保留單一入口點 -->
-    <script type="module" src="/index.tsx"></script>
-  </body>
+    <script type="module" src="./index.tsx"></script>
+  <script type="module" src="/index.tsx"></script>
+</body>
 </html>

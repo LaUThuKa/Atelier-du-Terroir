@@ -1,14 +1,13 @@
-
 import React from "react";
 import { createBrowserRouter, createHashRouter } from "react-router-dom";
 
 import Home from "./pages/Home";
-import CatalogStub from "./pages/CatalogStub";
+import Catalog from "./pages/Catalog";
 import ThemeAll from "./pages/ThemeAll";
 
 const routes = [
   { path: "/", element: <Home /> },
-  { path: "/catalog", element: <CatalogStub /> },
+  { path: "/catalog", element: <Catalog /> },
   { path: "/themes/:themeId", element: <ThemeAll /> },
 
   // 兼容某些預覽容器會以 /index.html 打開
