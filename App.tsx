@@ -8,7 +8,9 @@ import StickyNav from './components/StickyNav';
 import MobileNav from './components/MobileNav';
 import NeutralHero from './components/NeutralHero';
 import ScrollToTop from './components/ScrollToTop';
-import { Menu, ArrowRight } from 'lucide-react';
+import SiteFooter from './components/SiteFooter';
+import SiteHeader from './components/SiteHeader';
+import { ArrowRight } from 'lucide-react';
 
 /**
  * 捲動定位常數系統
@@ -125,8 +127,6 @@ const App: React.FC = () => {
       targetElement = document.getElementById(`dish-${index}`);
       if (targetElement) {
         const rect = targetElement.getBoundingClientRect();
-        // ✅ 修正：手動減去 visualLineTop 偏移量
-        // 因為 DishCard 不再帶有負 margin 補償，這裡必須顯式計算
         const y = rect.top + window.scrollY - visualLineTop;
         window.scrollTo({ top: y, behavior: 'smooth' });
       }
@@ -217,25 +217,10 @@ const App: React.FC = () => {
         />
       )}
 
-      <header className="fixed top-0 left-0 right-0 h-14 lg:h-16 bg-bg/95 backdrop-blur z-50 border-b border-olive_divider px-4 lg:px-8 flex items-center justify-between">
-        <div className="w-10">
-           <Menu className="text-text cursor-pointer hover:text-accent transition-colors" />
-        </div>
-        <button 
-          onClick={() => handleNavigate('top')}
-          className="font-serif font-bold text-lg lg:text-xl tracking-wider text-ink hover:text-accent transition-colors outline-none px-2 rounded-md focus-visible:ring-2 focus-visible:ring-accent_hover focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
-        >
-          Atelier du Terroir
-        </button>
-        <div className="w-10 flex justify-end">
-           <a href="tel:+123456789" className="text-xs font-semibold bg-ink text-bg px-4 py-1.5 rounded-full hover:bg-accent transition-all">
-             Contact
-           </a>
-        </div>
-      </header>
+      {/* [Ticket C06] 改用 SiteHeader 元件 */}
+      <SiteHeader />
 
       <main className="pt-14 lg:pt-16">
-        {/* [R01-2] 使用共用 NeutralHero */}
         <NeutralHero 
           title="土壤到餐桌的藝術敘事" 
           subtitle="Pure Lait Experience" 
@@ -313,7 +298,6 @@ const App: React.FC = () => {
                  <DishCard key={`${currentTheme.id}-${dish.id}`} dish={dish} index={index} />
                ))}
                
-               {/* [UI-03] 主題底部導流：改用 text variant Button 以降低視覺強度，並維持分隔符 */}
                <div className="border-t border-olive_divider pt-12 pb-8 flex flex-col sm:flex-row gap-2 sm:gap-6 justify-center items-center">
                  <Link to={`/themes/${currentTheme.id}`}>
                    <Button variant="text" className="gap-2 px-4 py-2 text-base">
@@ -341,6 +325,8 @@ const App: React.FC = () => {
           </aside>
         </div>
       </main>
+
+      <SiteFooter />
 
       <MobileNav 
         currentTheme={currentTheme}
