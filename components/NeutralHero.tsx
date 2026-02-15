@@ -3,24 +3,38 @@ import React from 'react';
 interface NeutralHeroProps {
   title: string;
   subtitle: string;
+  hint?: string;
+  imageSeed?: number;
 }
 
-const NeutralHero: React.FC<NeutralHeroProps> = ({ title, subtitle }) => {
+const NeutralHero: React.FC<NeutralHeroProps> = ({ title, subtitle, hint, imageSeed }) => {
   return (
-    <section className="relative w-full h-[180px] lg:h-[280px] bg-ink overflow-hidden">
-      <img 
-        src="https://picsum.photos/seed/hero-bg/1920/600" 
-        alt="Hero Background" 
-        className="w-full h-full object-cover opacity-60"
-      />
-      <div className="absolute inset-0 bg-gradient-to-b from-ink/20 to-ink/60"></div>
-      <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-4">
-        <h1 className="text-bg font-serif text-2xl lg:text-4xl font-bold mb-3 drop-shadow-md max-w-2xl leading-tight tracking-wide">
+    <section className="relative w-full bg-bg pt-12 lg:pt-16 pb-6 min-h-[200px] sm:min-h-[220px] lg:min-h-[260px] flex items-center border-b border-olive_divider overflow-hidden">
+      {/* 背景圖策略：柔化處理，確保文字可讀性 */}
+      {imageSeed && (
+        <div className="absolute inset-0 z-0">
+          <img 
+            src={`https://picsum.photos/seed/${imageSeed}/1920/600`} 
+            alt="" 
+            className="w-full h-full object-cover opacity-10"
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-bg/0 via-bg/40 to-bg"></div>
+        </div>
+      )}
+
+      {/* 內容容器 */}
+      <div className="relative z-10 max-w-[1200px] mx-auto px-4 w-full text-center">
+        <h1 className="text-4xl sm:text-5xl lg:text-6xl font-serif tracking-tight text-ink leading-tight">
           {title}
         </h1>
-        <p className="text-surface/90 font-sans text-xs lg:text-sm mb-4 tracking-[0.4em] uppercase font-medium">
+        <p className="mt-3 text-base sm:text-lg text-olive_muted leading-relaxed max-w-[70ch] mx-auto">
           {subtitle}
         </p>
+        {hint && (
+          <p className="mt-2 text-sm text-olive_hint italic">
+            {hint}
+          </p>
+        )}
       </div>
     </section>
   );
