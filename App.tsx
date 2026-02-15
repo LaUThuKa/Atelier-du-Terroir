@@ -272,16 +272,15 @@ const App: React.FC = () => {
         <div className="max-w-[1200px] mx-auto flex flex-col lg:flex-row relative items-stretch">
           <div className="flex-1 px-4 lg:px-8 pt-0 pb-16 min-h-screen">
             
-            {/* ✅ 恢復 00 區別化規則 (單純區塊，不帶 padding/margin 補償) */}
             <section id="editor-note" className="relative mt-2 pt-8 mb-16 lg:mb-20 pb-10 lg:pb-14 border-b border-olive_border/40">
               <div id="anchor-00" className="absolute top-0 left-0 h-0 w-0 invisible pointer-events-none" aria-hidden="true" />
-              <div className="bg-surface/10 rounded-2xl p-8 lg:p-14 border border-olive_border shadow-sm">
+              <div className="bg-surface rounded-2xl p-8 lg:p-14 border border-olive_border shadow-sm">
                 <div className="max-w-[72ch] mx-auto space-y-6 text-center">
                   <h2 className="text-accent text-xs font-semibold uppercase tracking-[0.28em] mb-2">Editor's Note</h2>
                   <p className="text-text/90 font-serif text-lg lg:text-[20px] leading-[1.85] font-medium">
                     在每一道料理中，我們堅持還原食材最原始的靈魂。
                   </p>
-                  <p className="text-olive_muted font-sans text-base lg:text-lg leading-[1.85] max-w-xl mx-auto font-normal">
+                  <p className="text-muted font-sans text-base lg:text-lg leading-[1.85] max-w-xl mx-auto font-normal">
                     透過精準的火候控制與調味堆疊，創造出超越味覺的感官體驗。這是一場關於土地、時間與技藝的對話。
                   </p>
                   <div className="pt-2 flex justify-center">
