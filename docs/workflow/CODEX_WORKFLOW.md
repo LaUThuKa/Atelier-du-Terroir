@@ -15,6 +15,62 @@
 
 ---
 
+## Environment Responsibilities（Windows vs WSL Ubuntu）
+
+本專案採用「Ubuntu（WSL2）為工程真相、Windows 為工作台」的分工，以降低環境飄移與權限/檔案鎖等非預期問題，並讓本機驗收與 CI（Linux runner）保持一致。
+
+### Ubuntu（WSL2）＝強環境 / 工程真相（Source of Truth for Build）
+Ubuntu（WSL2）負責所有「會影響依賴、建置、部署、可攜性」的工作，並作為驗收與 Git 操作主場。
+
+- **必做驗收**（每張工程票 DoD 的最低門檻）  
+  - `npm ci --no-audit --no-fund`  
+  - `npm run build`  
+  - `npm run preview`（需要時）
+- **Git 主操作**：branch / commit / cherry-pick / merge / rebase（避免 Windows 檔案鎖與權限坑）
+- **部署/CI 對齊**：GitHub Actions runner 為 Linux，WSL Ubuntu 先跑通等同提前驗證
+- **Repo 放置規則**：repo 應位於 Linux 檔案系統（建議 `~/src/<repo>`），避免以 `/mnt/<drive>/...` 作為主 repo
+
+> 建議主 repo 位置：`~/src/Atelier-du-Terroir`  
+> 避免：`/mnt/d/...` 作為日常工程主工作樹（容易受 Windows 檔案監控/權限影響）
+
+### Windows＝工作台 / 介面與外部工具（Workbench）
+Windows 專注於「視覺與工具整合」，不作為工程驗收主場。
+
+- **IDE/UI**：VS Code（建議使用 WSL Remote 直接開 Ubuntu repo）、瀏覽器視覺驗收（localhost）
+- **GitHub Web**：PR 審查、merge、查看 Actions logs / 部署狀態
+- **內容與資產**：文案、素材、設計工具（AI Studio/Figma/圖像處理等）
+
+### VS Code 建議工作模式（最穩）
+- Windows 開 VS Code → 使用 **WSL Remote** 開啟 `~/src/Atelier-du-Terroir`
+- 在同一份 Ubuntu repo 上編輯、跑命令、做 git 操作
+- Windows 僅用瀏覽器確認 `localhost` 的視覺結果與 GitHub PR/Actions 狀態
+
+---
+
+## Daily SOP（每票固定操作順序）
+1. 進入 Ubuntu（WSL2）repo：`cd ~/src/Atelier-du-Terroir`
+2. 同步主線：`git checkout main && git pull`
+3. 建立票分支（乾淨可開 PR）：`git checkout -b codex/<ticket>-<slug>-clean`
+4. 僅修改本票白名單檔案（Scope Fence）
+5. 在 Ubuntu 驗收：  
+   - `npm ci --no-audit --no-fund`  
+   - `npm run build`  
+   - `npm run preview`（需要時）
+6. 檢查變更範圍：`git diff --name-only origin/main...HEAD`（必須只包含白名單）
+7. Commit（可回滾）：`git commit -m "<type>: <message>"`
+8. Push 分支：`git push -u origin <branch>`
+9. Windows GitHub 開 PR → review → merge
+10. 回 Ubuntu：`git checkout main && git pull`，進下一票
+
+---
+
+## Policy：避免混票（必遵守）
+- **新票必須新分支 / 新 PR**，不得沿用上一票分支累積 commit
+- 若分支發生混票：一律以 `main` 建立乾淨分支，使用 `cherry-pick` 收斂必要 commit 後再開 PR
+- Windows 端若使用 Codex/Web UI，禁止以「Update branch」推進新票（僅允許用於同一 PR 的續修）
+
+---
+
 ## 1) 分支策略（Branching）
 
 ### 1.1 長期分支（長存）
