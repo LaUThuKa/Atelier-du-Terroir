@@ -442,4 +442,54 @@ npm run preview
   * PR：Close（或保留 Draft 但標記廢棄）
   * 分支：完成後刪除本機分支；遠端分支視情況保留或刪除（以 repo 乾淨為準）
 
+---
 
+## UI 按鈕行為規則：Update branch 與 Create PR
+
+### 目的
+
+Codex 網頁介面提供「更新分支（Update branch）」與「建立新 PR（Create new PR / Create PR）」等動作。若使用不當，容易造成 **多張票的變更與 commit 堆疊在同一條工作分支**，進而導致 **PR 混票（多檔案、多 commit、跨票污染）**。本專案採用「單票可驗收、可回滾、可審計」原則，因此需明確規範這些按鈕的使用時機。
+
+### 規則 U1：Update branch 僅限「同一張 PR 的續修」
+
+只在以下情境允許使用 **Update branch**：
+
+* 你已經有一張正在審查中的 PR，且本次只是在**同一張 PR** 上修正問題（例如修 CI、修小錯、修 review comment）。
+* 你確定本次修改仍**完全落在該票的 Scope Fence（白名單）**內。
+
+禁止使用 Update branch 的情境（遇到任一條即禁止）：
+
+* 你正在進入下一張票（新的 ticket 編號 / 新的 scope）。
+* 你需要把本票拆成乾淨交付（`*-clean`）或避免混票。
+* 你發現 Codex 工作分支已混入其他票的 commit / 檔案（多票污染）。
+* 這是一張 **docs-only** 或「白名單極嚴」的票（高風險混票）。
+
+### 規則 U2：每張票交付一律以 Clean 分支建立新 PR
+
+無論是否同一個 Codex 主線對話，**每張票交付**一律使用：
+
+* 從 `main` 最新 HEAD 建立乾淨分支：`codex/p0-<n>-<slug>-clean`
+* 只 cherry-pick 本票必要 commit 進入 clean 分支
+* 使用 clean 分支 **建立新 PR**（或重開 PR），不得直接從混票工作分支 merge
+
+> 原則：`codex/task-*` 可作為工作暫存，但永遠不是最終 merge 來源。
+
+### 規則 U3：建立 PR 前的必做檢查（防混票）
+
+在建立 PR 或更新 PR 前，必須先確認：
+
+* `git diff --name-only origin/main..HEAD` **只包含本票白名單檔案**
+* PR 頁面 `Files changed` 與本票白名單一致
+
+  * 若不一致：**停止**，改走「自動收斂流程」重新以 clean 分支開 PR
+
+### 規則 U4：遇到混票的標準處置
+
+若已發生混票（PR 顯示多檔案/多 commit/跨票變更）：
+
+1. 不 merge 該 PR（可 Close 保留歷史）
+2. 依「自動收斂流程」從 `main` 建立 `*-clean` 分支
+3. cherry-pick 僅本票必要 commit
+4. 重新開 PR，直到 `Files changed` 與白名單一致為止
+
+---
