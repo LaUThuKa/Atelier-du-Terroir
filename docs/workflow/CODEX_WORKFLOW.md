@@ -1,4 +1,4 @@
-# WORKFLOW.md — Ticket × Codex × GitHub × 本機驗收（V1）
+﻿# WORKFLOW.md — Ticket × Codex × GitHub × 本機驗收（V1）
 
 本文件定義 Atelier du Terroir 專案的標準開發流程，目標是：**避免改動來源混亂、確保 main 永遠可發布、所有變更可追溯可驗收**。
 
