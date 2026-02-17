@@ -11,7 +11,8 @@
     "lint:portable": "node scripts/check-portable.mjs",
     "lint:drift": "node scripts/check-drift.mjs",
     "lint:importmap": "node scripts/check-importmap.mjs",
-    "precommit": "npm run lint:portable && npm run lint:drift && npm run lint:importmap"
+    "precommit": "npm run lint:portable && npm run lint:drift && npm run lint:importmap",
+    "postinstall": "node scripts/ensure-rollup-native.mjs"
   },
   "dependencies": {
     "lucide-react": "^0.563.0",
