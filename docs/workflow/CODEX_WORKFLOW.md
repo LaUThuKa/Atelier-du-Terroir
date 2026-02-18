@@ -549,3 +549,80 @@ Codex 網頁介面提供「更新分支（Update branch）」與「建立新 PR�
 4. 重新開 PR，直到 `Files changed` 與白名單一致為止
 
 ---
+
+## 部署與對齊規則：Push ≠ 上線 / PR = main 對齊 / Pages = main（必讀）
+
+本專案的「可發布狀態」以 `main` 為唯一真相來源，部署（GitHub Pages）亦僅從 `main` 產生。請嚴格遵守下列規則，避免出現「分支看起來成功、正式站沒變」或「本機與線上不一致」的錯覺。
+
+### 核心定義
+- **Push ≠ 上線**：`git push origin <branch>` 只代表把變更送到遠端分支，並不會更新正式站。
+- **PR = main 對齊**：只有 **PR merge 進 `main`**，才代表專案狀態「對齊」並進入可發布範圍。
+- **Pages = main**：GitHub Pages（Actions 部署）只會在 `main` 更新時觸發（或手動 workflow_dispatch），因此**正式站只反映 main**。
+
+### 規則 D1：任何會影響正式站的改動，一律必須「走 PR → merge main」
+- 禁止以「只 push 分支」當作已上線或已完成。
+- 禁止把「分支 build 成功」視為正式站可用。
+- 唯一可視為完成的路徑：**branch → PR → review/驗收 → merge main → Pages 部署成功（綠燈）**。
+
+### 規則 D2：每票驗收分兩段（本機 / 線上）
+- **本機驗收**（你能控制）：`npm ci` → `npm run build`（必要時 `npm run preview`）
+- **線上驗收**（以 Pages/Actions 為準）：PR merge 後確認 Actions 綠燈 + 開站檢查（Console/Network）
+> 注意：本機 OK 不代表線上 OK；線上缺資源（CSS/圖片/BASE_PATH）常在 Pages 才暴露。
+
+### 規則 D3：如何確認「正式站一定吃到本次變更」
+1) 確認 PR 已 merge 進 `main`
+2) `main` 最新 commit hash 與 PR merge commit 對得上（GitHub commits/main）
+3) GitHub Actions 的 Pages workflow 該次 run 為綠燈
+4) 正式站強制刷新 + 無痕測試
+5) 用 Console/Network 檢查必要資源是否載入：
+   - CSS：`performance.getEntriesByType('resource').filter(r=>/assets\/index-.*\.css/.test(r.name))`
+   - tokens：`performance.getEntriesByType('resource').filter(r=>r.name.includes('tokens.js'))`
+
+### 常見誤區（必避）
+- 「我在分支看到改好了」：分支不等於 main；Pages 不會看分支。
+- 「我 push 了但站沒變」：因為沒 merge main 或 Actions/Pages 沒跑成功。
+- 「本機樣式正常、正式站樣式壞」：通常是 CSS 沒被 link 進 dist/index.html、Base path 不對、或資源未進 public/dist。
+
+---
+
+## 過期 PR / 過期分支處理規範（避免混票、避免重覆合併）
+
+在 Codex / GitHub UI 操作中，常見情境是：
+- 同一張票曾開過一個 PR，但後來用「乾淨分支（clean）」重開/重做
+- 早期分支因 Update branch 或混票而被淘汰
+- main 已經透過其他 PR 合併完成，舊 PR 變成「過期」
+
+本節定義：**過期 PR / 過期分支的標準處理流程**。
+
+### 定義
+- **過期 PR**：其變更已被另一個 PR 取代（clean 分支）、或 main 已包含同等/更完整的變更。
+- **過期分支**：用來產生過期 PR 的 head branch；或曾混票、不可再作為最終 merge 來源的工作分支。
+
+### 規則 E1：過期 PR 一律「關閉，不 merge」
+符合任一條即視為過期（擇一即成立）：
+1) `main` 已透過其他 PR 合併同樣目的的變更（尤其是 `codex/p0-*-*-clean`）
+2) PR 來源分支不是本票的 clean 分支（或已宣告該分支不可 merge）
+3) PR 顯示異常警告（例如 hidden/bidirectional Unicode text），且 main 已有正常版本
+
+處理方式：
+- 在 PR 留 comment（固定句型）：
+  - 「此 PR 已由 PR #<new> 取代（clean 分支版本），為避免混票與重覆合併，關閉此 PR。」
+- 直接 Close PR（不 merge）
+
+### 規則 E2：過期 PR 若疑似有「遺漏內容」，只能用 cherry-pick 補票，不得直接 merge 舊 PR
+若你懷疑舊 PR 有少量內容未進 main：
+1) 先在 `main` 最新 HEAD 建立新 clean 分支（新票或補票）
+2) 只 cherry-pick 必要 commit（逐顆挑）
+3) `git diff --name-only origin/main...HEAD` 必須符合白名單
+4) 以此 clean 分支開新 PR 合併
+> 原則：**補缺口要用乾淨分支收斂，不能讓過期 PR 直接進 main。**
+
+### 規則 E3：過期分支的遠端清理（減少 UI 噪音、避免誤按）
+- PR 關閉後，遠端分支應儘量刪除（除非要保留作為審計參考，且已明確標註不可 merge）
+- 建議命名與定位：
+  - 可 merge：`codex/p0-<n>-<slug>-clean`
+  - 不可 merge（工作暫存/混票）：`codex/task-<slug>`（完成後應刪除）
+
+### 規則 E4：GitHub UI 按鈕的交互風險提醒（與 U1/U2 配套）
+- 任何「Update branch」若造成舊分支被更新、commit 堆疊、或與其他票混在一起，該分支即降級為「不可 merge」
+- 一律改走：從 `main` 重新切 clean 分支 → cherry-pick 必要 commit → 乾淨 PR
