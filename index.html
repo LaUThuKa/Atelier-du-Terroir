@@ -329,44 +329,6 @@ STATUS: ${tok.violations > 0 ? "DRIFT_BLOCKED" : "STABLE"}`;
     <script type="module" src="/tokens.js"></script>
     
     <script>
-      window.tailwind = window.tailwind || {};
-      window.tailwind.config = {
-        theme: {
-          extend: {
-            colors: {
-              vanilla: "rgb(var(--vanilla) / <alpha-value>)",
-              wheat: "rgb(var(--wheat) / <alpha-value>)",
-              olive: "rgb(var(--olive) / <alpha-value>)",
-              amber: "rgb(var(--amber) / <alpha-value>)",
-              sun: "rgb(var(--sun) / <alpha-value>)",
-              footerDeep: "rgb(var(--footerDeep) / <alpha-value>)",
-              ink: "rgb(var(--ink) / <alpha-value>)",
-              text: "rgb(var(--text) / <alpha-value>)",
-              bg: "rgb(var(--bg) / <alpha-value>)",
-              surface: "rgb(var(--surface) / <alpha-value>)",
-              muted: "rgb(var(--muted) / <alpha-value>)",
-              accent: "rgb(var(--accent) / <alpha-value>)",
-              accent_hover: "rgb(var(--accentHover) / <alpha-value>)",
-              dark: "rgb(var(--heading) / <alpha-value>)",
-              olive_border: "rgba(79, 88, 59, 0.25)",
-              olive_divider: "rgba(79, 88, 59, 0.18)",
-              olive_muted: "rgba(79, 88, 59, 0.85)",
-              olive_hint: "rgba(79, 88, 59, 0.65)",
-              olive_disabled: "rgba(79, 88, 59, 0.45)",
-            },
-            fontFamily: {
-              serif: ['"Noto Serif TC"', "serif"],
-              sans: ['"Noto Sans TC"', "sans-serif"],
-            },
-            spacing: { "128": "32rem" },
-          },
-        },
-      };
-    </script>
-
-    <script src="https://cdn.tailwindcss.com"></script>
-
-    <script>
       (function twFallbackAccentIfMissing() {
         function hasSelector(sel) {
           for (const sheet of document.styleSheets) {
