@@ -18,3 +18,10 @@ View your app in AI Studio: https://ai.studio/apps/drive/1bKpUM6WLxV0K63e0A4pgCt
 2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
 3. Run the app:
    `npm run dev`
+
+## GitHub Pages Deployment
+
+- This repo uses GitHub Project Pages at `/Atelier-du-Terroir/`.
+- Build for Pages with:
+  `npm run build:gh`
+- `build:gh` sets `VITE_BASE=/Atelier-du-Terroir/` so `dist/index.html` references `/Atelier-du-Terroir/assets/*`.
