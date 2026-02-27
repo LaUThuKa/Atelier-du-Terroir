@@ -293,7 +293,7 @@ const App: React.FC = () => {
             </section>
 
             <section id="showcase-start">
-               {currentTheme.dishes.map((dish, index) => (
+               {currentTheme.dishes.slice(0, 2).map((dish, index) => (
                  <DishCard key={`${currentTheme.id}-${dish.id}`} dish={dish} index={index} />
                ))}
                
