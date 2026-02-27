@@ -11,13 +11,14 @@ const DishCardUnified: React.FC<DishCardUnifiedProps> = ({ dish, variant }) => {
   const isCatalog = variant === 'catalog';
 
   // 1. 欄位適配 (Adapter Logic) - 依照 Ticket U05.1 規格優先取值
-  const imageSrc = dish.image 
-    || dish.image_url 
-    || dish.cover 
-    || dish.cover_url 
-    || dish.hero_image 
-    || dish.heroImage 
-    || null;
+  const base = (import.meta as any).env?.BASE_URL || "/";
+  const imageSrc = dish.image
+    || dish.image_url
+    || dish.cover
+    || dish.cover_url
+    || dish.hero_image
+    || dish.heroImage
+    || (dish.imageKey ? `${base}images/${dish.imageKey}.jpg` : null);
 
   const title = dish.title_zh 
     || dish.titleZh 
