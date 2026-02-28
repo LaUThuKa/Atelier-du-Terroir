@@ -53,13 +53,6 @@ const DishCardUnified: React.FC<DishCardUnifiedProps> = ({ dish, variant }) => {
         : [dish.tag_zh || dish.tag || "精選作品"];
 
   const badgesToShow = badges.filter(Boolean).slice(0, 3);
-  const lait = dish.laitStructure || dish.lait_structure || null;
-  const laitRows = lait ? [
-    lait.base ? `Base: ${lait.base}` : "",
-    lait.note ? `Note: ${lait.note}` : "",
-    lait.finish ? `Finish: ${lait.finish}` : "",
-  ].filter(Boolean) : [];
-
   // 密度與視覺設定分岔
   const styles = {
     container: isCatalog ? "p-5" : "p-6",
@@ -129,21 +122,22 @@ const DishCardUnified: React.FC<DishCardUnifiedProps> = ({ dish, variant }) => {
 
         {/* Theme 變體專有的乳香結構 */}
         {!isCatalog && (
-          <div className="mb-6">
-            <div className="flex items-center gap-2 text-xs font-bold text-olive_hint tracking-wider mb-2">
-              <span className="w-1 h-1 rounded-full bg-accent" />
-              {laitRows.length ? "Lait Structure" : "Curated Narrative"}
-            </div>
-
-            {laitRows.length > 0 && (
-              <div className="text-[12px] leading-relaxed text-muted space-y-1">
-                {laitRows.map((line, i) => (
-                  <div key={i} className="line-clamp-2">
-                    {line}
-                  </div>
-                ))}
-              </div>
-            )}
+          <div className="bg-card rounded-2xl p-7 mb-10 border border-olive_border">
+            <h4 className="text-[11px] uppercase tracking-[0.3em] text-muted mb-5 font-bold">Lait Structure</h4>
+            <ul className="space-y-4 font-mono text-sm lg:text-[15px] text-text">
+              <li className="flex items-center gap-4">
+                <span className="w-2 h-2 rounded-full bg-accent"></span>
+                <span className="line-clamp-1">{dish.laitStructure?.base}</span>
+              </li>
+              <li className="flex items-center gap-4">
+                <span className="w-2 h-2 rounded-full bg-accent/60"></span>
+                <span className="line-clamp-1">{dish.laitStructure?.note}</span>
+              </li>
+              <li className="flex items-center gap-4">
+                <span className="w-2 h-2 rounded-full bg-accent/30"></span>
+                <span className="line-clamp-1">{dish.laitStructure?.finish}</span>
+              </li>
+            </ul>
           </div>
         )}
 
