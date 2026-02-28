@@ -45,11 +45,14 @@ const DishCardUnified: React.FC<DishCardUnifiedProps> = ({ dish, variant }) => {
   // 若主要描述為空，則嘗試使用第二描述作為備案
   const finalDescription = description || description2 || "";
 
-  const tag = dish.badges?.[0] 
-    || dish.tags?.[0] 
-    || dish.tag_zh 
-    || dish.tag 
-    || "精選作品";
+  const badges: string[] =
+    (Array.isArray(dish.badges) && dish.badges.length > 0)
+      ? dish.badges
+      : (Array.isArray(dish.tags) && dish.tags.length > 0)
+        ? dish.tags
+        : [dish.tag_zh || dish.tag || "精選作品"];
+
+  const badgesToShow = badges.filter(Boolean).slice(0, 3);
 
   // 密度與視覺設定分岔
   const styles = {
@@ -87,9 +90,14 @@ const DishCardUnified: React.FC<DishCardUnifiedProps> = ({ dish, variant }) => {
         
         {/* 2. Tag (膠囊) */}
         <div className="absolute top-4 left-4 flex flex-wrap gap-2">
-          <span className="bg-bg/90 backdrop-blur-sm border border-olive_border text-olive_muted text-[10px] px-2.5 py-1 rounded-full font-bold shadow-sm tracking-wider uppercase">
-            {tag}
-          </span>
+          {badgesToShow.map((b, i) => (
+            <span
+              key={`${b}-${i}`}
+              className="bg-bg/90 backdrop-blur-sm border border-olive_border text-olive_muted text-[10px] px-2.5 py-1 rounded-full font-bold shadow-sm tracking-wider uppercase"
+            >
+              {b}
+            </span>
+          ))}
         </div>
       </div>
 
