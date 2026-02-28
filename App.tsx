@@ -38,6 +38,8 @@ const App: React.FC = () => {
   const safetyUnlockRef = useRef<number | null>(null);
 
   const currentTheme = THEMES.find(t => t.id === activeThemeId) || THEMES[0];
+  const homeDishes = currentTheme.dishes.slice(0, 2);
+  const currentThemeHome = { ...currentTheme, dishes: homeDishes };
 
   /**
    * 使用 ResizeObserver 自動校準高度
@@ -149,7 +151,7 @@ const App: React.FC = () => {
 
       const markers = [
         { anchorId: 'anchor-00', sectionId: 'editor-note' },
-        ...currentTheme.dishes.map((_, i) => ({ 
+        ...homeDishes.map((_, i) => ({ 
           anchorId: `anchor-${i + 1}`, 
           sectionId: `dish-${i}` 
         }))
@@ -191,17 +193,17 @@ const App: React.FC = () => {
   const handleNextDish = () => {
     if (activeSection.startsWith('dish-')) {
       const currentIndex = parseInt(activeSection.split('-')[1]);
-      if (currentIndex < currentTheme.dishes.length - 1) {
+      if (currentIndex < homeDishes.length - 1) {
         handleNavigate(`dish-${currentIndex + 1}`);
       }
-    } else if (activeSection === 'editor-note' && currentTheme.dishes.length > 0) {
+    } else if (activeSection === 'editor-note' && homeDishes.length > 0) {
       handleNavigate('dish-0');
     }
   };
   
   const currentDishIndex = activeSection.startsWith('dish-') ? parseInt(activeSection.split('-')[1]) : -1;
   const canPrev = currentDishIndex > 0;
-  const canNext = currentDishIndex < currentTheme.dishes.length - 1 || (currentDishIndex === -1 && currentTheme.dishes.length > 0);
+  const canNext = currentDishIndex < homeDishes.length - 1 || (currentDishIndex === -1 && homeDishes.length > 0);
 
   return (
     <div className="bg-bg min-h-screen text-text selection:bg-surface selection:text-ink pb-20 lg:pb-0">
@@ -293,7 +295,7 @@ const App: React.FC = () => {
             </section>
 
             <section id="showcase-start">
-               {currentTheme.dishes.slice(0, 2).map((dish, index) => (
+               {homeDishes.map((dish, index) => (
                  <DishCard key={`${currentTheme.id}-${dish.id}`} dish={dish} index={index} />
                ))}
                
@@ -317,7 +319,7 @@ const App: React.FC = () => {
 
           <aside className="hidden lg:block w-[320px] pl-10 relative">
             <StickyNav 
-              currentTheme={currentTheme}
+              currentTheme={currentThemeHome}
               activeSection={activeSection}
               onNavigate={handleNavigate}
             />
@@ -328,7 +330,7 @@ const App: React.FC = () => {
       <SiteFooter />
 
       <MobileNav 
-        currentTheme={currentTheme}
+        currentTheme={currentThemeHome}
         onNavigate={handleNavigate}
         onPrevDish={handlePrevDish}
         onNextDish={handleNextDish}
