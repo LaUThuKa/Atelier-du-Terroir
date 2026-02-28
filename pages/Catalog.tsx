@@ -115,18 +115,20 @@ const Catalog: React.FC = () => {
         />
 
         {/* 控制列：純粹篩選工具 */}
-        <section className="relative z-40 mb-12">
-          <CatalogControls 
-            themes={themesForChips}
-            activeTheme={activeTheme}
-            onThemeChange={setActiveTheme} 
-            sortValue={activeSort}
-            sortOptions={sortOptions}
-            onSortChange={setActiveSort}
-            leftSlot={leftSlot}
-            rightSlot={null}
-          />
-        </section>
+        <div className="hidden md:block">
+          <section className="relative z-40 mb-12">
+            <CatalogControls 
+              themes={themesForChips}
+              activeTheme={activeTheme}
+              onThemeChange={setActiveTheme} 
+              sortValue={activeSort}
+              sortOptions={sortOptions}
+              onSortChange={setActiveSort}
+              leftSlot={leftSlot}
+              rightSlot={null}
+            />
+          </section>
+        </div>
 
         {/* 作品展示區：緊跟在控制列後 */}
         <div className="mt-8">

@@ -73,15 +73,17 @@ const ThemeAll: React.FC = () => {
           imageSeed={theme.imageKey}
         />
 
-        <CatalogControls 
-          themes={themesForChips}
-          activeTheme={themeId || theme.id}
-          onThemeChange={handleThemeChange} // 執行導航換頁
-          sortValue={activeSort}
-          sortOptions={sortOptions}
-          onSortChange={setActiveSort}
-          leftSlot={leftSlot}
-        />
+        <div className="hidden md:block">
+          <CatalogControls 
+            themes={themesForChips}
+            activeTheme={themeId || theme.id}
+            onThemeChange={handleThemeChange} // 執行導航換頁
+            sortValue={activeSort}
+            sortOptions={sortOptions}
+            onSortChange={setActiveSort}
+            leftSlot={leftSlot}
+          />
+        </div>
 
         <div className="mt-8">
           {displayDishes.length > 0 ? (
