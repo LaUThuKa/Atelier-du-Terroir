@@ -8,7 +8,7 @@ interface DishCardProps {
   index: number;
 }
 
-const TEL_HREF = "tel:+88666044044";
+const TEL_HREF = "tel:+8860266044044";
 const MAIL_HREF = "mailto:moonlight76856e4@gmail.com";
 
 const DishCard: React.FC<DishCardProps> = ({ dish, index }) => {
@@ -110,7 +110,7 @@ const DishCard: React.FC<DishCardProps> = ({ dish, index }) => {
             <Button 
               id="cta-tasting"
               className="flex-1 sm:flex-none gap-2 px-8"
-              onClick={() => window.location.href = MAIL_HREF}
+              onClick={() => window.location.href = TEL_HREF}
             >
               <Phone size={18} />
               品鑑洽詢
@@ -118,7 +118,7 @@ const DishCard: React.FC<DishCardProps> = ({ dish, index }) => {
             <Button 
               variant="ghost" 
               className="flex-1 sm:flex-none gap-2 px-8"
-              onClick={() => window.location.href = TEL_HREF}
+              onClick={() => window.location.href = MAIL_HREF}
             >
               合作邀約
               <ChevronRight size={18} />

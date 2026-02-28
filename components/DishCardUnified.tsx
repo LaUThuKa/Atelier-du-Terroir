@@ -7,7 +7,7 @@ interface DishCardUnifiedProps {
   variant: 'catalog' | 'theme';
 }
 
-const TEL_HREF = "tel:+88666044044";
+const TEL_HREF = "tel:+8860266044044";
 const MAIL_HREF = "mailto:moonlight76856e4@gmail.com";
 
 const DishCardUnified: React.FC<DishCardUnifiedProps> = ({ dish, variant }) => {
@@ -143,7 +143,7 @@ const DishCardUnified: React.FC<DishCardUnifiedProps> = ({ dish, variant }) => {
         <div className="mt-auto flex gap-3 pt-5 border-t border-olive_divider">
           <Button 
             className="flex-1 text-[11px] py-2.5 gap-1.5"
-            onClick={() => window.location.href = MAIL_HREF}
+            onClick={() => window.location.href = TEL_HREF}
           >
             <Phone size={14} />
             品鑑洽詢
@@ -151,7 +151,7 @@ const DishCardUnified: React.FC<DishCardUnifiedProps> = ({ dish, variant }) => {
           <Button 
             variant="ghost" 
             className="flex-1 text-[11px] py-2.5 gap-1"
-            onClick={() => window.location.href = TEL_HREF}
+            onClick={() => window.location.href = MAIL_HREF}
           >
             合作邀約
             <ChevronRight size={14} />
