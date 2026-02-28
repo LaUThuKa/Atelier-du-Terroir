@@ -53,6 +53,12 @@ const DishCardUnified: React.FC<DishCardUnifiedProps> = ({ dish, variant }) => {
         : [dish.tag_zh || dish.tag || "精選作品"];
 
   const badgesToShow = badges.filter(Boolean).slice(0, 3);
+  const lait = dish.laitStructure || dish.lait_structure || null;
+  const laitRows = lait ? [
+    lait.base ? `Base: ${lait.base}` : "",
+    lait.note ? `Note: ${lait.note}` : "",
+    lait.finish ? `Finish: ${lait.finish}` : "",
+  ].filter(Boolean) : [];
 
   // 密度與視覺設定分岔
   const styles = {
@@ -121,11 +127,23 @@ const DishCardUnified: React.FC<DishCardUnifiedProps> = ({ dish, variant }) => {
           {finalDescription}
         </p>
 
-        {/* Theme 變體專有的敘事標註 */}
+        {/* Theme 變體專有的乳香結構 */}
         {!isCatalog && (
-          <div className="mb-6 flex items-center gap-2 text-xs font-bold text-olive_hint tracking-wider">
-            <span className="w-1 h-1 rounded-full bg-accent" />
-            Curated Narrative
+          <div className="mb-6">
+            <div className="flex items-center gap-2 text-xs font-bold text-olive_hint tracking-wider mb-2">
+              <span className="w-1 h-1 rounded-full bg-accent" />
+              {laitRows.length ? "Lait Structure" : "Curated Narrative"}
+            </div>
+
+            {laitRows.length > 0 && (
+              <div className="text-[12px] leading-relaxed text-muted space-y-1">
+                {laitRows.map((line, i) => (
+                  <div key={i} className="line-clamp-2">
+                    {line}
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         )}
 
