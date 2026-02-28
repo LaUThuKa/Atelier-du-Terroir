@@ -67,11 +67,13 @@ const ThemeAll: React.FC = () => {
       <SiteHeader />
 
       <main className="pt-14 lg:pt-16">
-        <NeutralHero 
-          title={theme.name} 
-          subtitle={theme.tagline} 
-          imageSeed={theme.imageKey}
-        />
+        <div className="pointer-events-none md:pointer-events-auto">
+          <NeutralHero 
+            title={theme.name} 
+            subtitle={theme.tagline} 
+            imageSeed={theme.imageKey}
+          />
+        </div>
 
         <div className="hidden md:block">
           <CatalogControls 

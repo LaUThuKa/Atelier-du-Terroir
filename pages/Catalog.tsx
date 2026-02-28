@@ -107,12 +107,14 @@ const Catalog: React.FC = () => {
       <SiteHeader />
 
       <main className="pt-14 lg:pt-16 flex-1">
-        <NeutralHero 
-          title="完整作品目錄"
-          subtitle="以主題策展方式整理所有作品"
-          hint="使用下方標籤篩選作品類別"
-          imageSeed={888}
-        />
+        <div className="pointer-events-none md:pointer-events-auto">
+          <NeutralHero 
+            title="完整作品目錄"
+            subtitle="以主題策展方式整理所有作品"
+            hint="使用下方標籤篩選作品類別"
+            imageSeed={888}
+          />
+        </div>
 
         {/* 控制列：純粹篩選工具 */}
         <div className="hidden md:block">
