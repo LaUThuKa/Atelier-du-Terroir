@@ -7,6 +7,9 @@ interface DishCardUnifiedProps {
   variant: 'catalog' | 'theme';
 }
 
+const TEL_HREF = "tel:+88666044044";
+const MAIL_HREF = "mailto:moonlight76856e4@gmail.com";
+
 const DishCardUnified: React.FC<DishCardUnifiedProps> = ({ dish, variant }) => {
   const isCatalog = variant === 'catalog';
 
@@ -60,11 +63,6 @@ const DishCardUnified: React.FC<DishCardUnifiedProps> = ({ dish, variant }) => {
     titleSize: isCatalog ? "text-xl" : "text-2xl",
     descClamp: isCatalog ? "line-clamp-3" : "line-clamp-4",
     minHeight: isCatalog ? "min-h-[3.75rem]" : "min-h-[5rem]" 
-  };
-
-  const handleAction = (e: React.MouseEvent) => {
-    e.preventDefault();
-    // 依據 Ticket 規範：不導外、不撥號，僅保留互動反饋
   };
 
   return (
@@ -145,15 +143,15 @@ const DishCardUnified: React.FC<DishCardUnifiedProps> = ({ dish, variant }) => {
         <div className="mt-auto flex gap-3 pt-5 border-t border-olive_divider">
           <Button 
             className="flex-1 text-[11px] py-2.5 gap-1.5"
-            onClick={handleAction}
+            onClick={() => window.location.href = MAIL_HREF}
           >
             <Phone size={14} />
-            品鑑作品
+            品鑑洽詢
           </Button>
           <Button 
             variant="ghost" 
             className="flex-1 text-[11px] py-2.5 gap-1"
-            onClick={handleAction}
+            onClick={() => window.location.href = TEL_HREF}
           >
             合作邀約
             <ChevronRight size={14} />

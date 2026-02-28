@@ -1,6 +1,8 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 
+const TEL_HREF = "tel:+88666044044";
+
 /**
  * SiteHeader - 全站共用頂欄
  * [Ticket A01-T10a] 僅調整色彩 className，嚴禁改動 DOM 結構、佈局與高度。
@@ -28,7 +30,7 @@ const SiteHeader: React.FC = () => {
       {/* 右側：聯絡按鈕 (僅調整背景色彩語意) */}
       <div className="shrink-0 flex items-center justify-end">
          <a 
-           href="tel:+123456789" 
+           href={TEL_HREF}
            className="text-xs font-semibold bg-dark text-bg px-4 py-1.5 rounded-full hover:bg-accent transition-all whitespace-nowrap"
          >
            Contact

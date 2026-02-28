@@ -8,6 +8,9 @@ interface DishCardProps {
   index: number;
 }
 
+const TEL_HREF = "tel:+88666044044";
+const MAIL_HREF = "mailto:moonlight76856e4@gmail.com";
+
 const DishCard: React.FC<DishCardProps> = ({ dish, index }) => {
   const isEven = index % 2 === 0;
   // 獲取 Vite 環境的 BASE_URL，確保部署到 GitHub Pages 子路徑時路徑正確
@@ -107,7 +110,7 @@ const DishCard: React.FC<DishCardProps> = ({ dish, index }) => {
             <Button 
               id="cta-tasting"
               className="flex-1 sm:flex-none gap-2 px-8"
-              onClick={() => window.location.href = 'tel:+1234567890'}
+              onClick={() => window.location.href = MAIL_HREF}
             >
               <Phone size={18} />
               品鑑洽詢
@@ -115,7 +118,7 @@ const DishCard: React.FC<DishCardProps> = ({ dish, index }) => {
             <Button 
               variant="ghost" 
               className="flex-1 sm:flex-none gap-2 px-8"
-              onClick={() => window.location.href = 'mailto:info@atelier.com'}
+              onClick={() => window.location.href = TEL_HREF}
             >
               合作邀約
               <ChevronRight size={18} />
