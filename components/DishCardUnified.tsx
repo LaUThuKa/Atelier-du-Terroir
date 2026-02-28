@@ -122,7 +122,7 @@ const DishCardUnified: React.FC<DishCardUnifiedProps> = ({ dish, variant }) => {
 
         {/* Theme 變體專有的乳香結構 */}
         {!isCatalog && (
-          <div className="bg-card rounded-2xl p-7 mb-10 border border-olive_border">
+          <div className="mb-6">
             <h4 className="text-[11px] uppercase tracking-[0.3em] text-muted mb-5 font-bold">Lait Structure</h4>
             <ul className="space-y-4 font-mono text-sm lg:text-[15px] text-text">
               <li className="flex items-center gap-4">
