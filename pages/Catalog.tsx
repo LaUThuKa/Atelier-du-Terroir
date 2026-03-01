@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Home } from 'lucide-react';
 import ScrollToTop from '../components/ScrollToTop';
 import DishGrid from '../components/DishGrid';
@@ -8,9 +8,11 @@ import NeutralHero from '../components/NeutralHero';
 import SiteFooter from '../components/SiteFooter';
 import SiteHeader from '../components/SiteHeader';
 import EmptyState from '../components/EmptyState';
+import ThemeChips from '../components/ThemeChips';
 import { THEMES } from '../data/content';
 
 const Catalog: React.FC = () => {
+  const navigate = useNavigate();
   const catalogDishes = useMemo(() => {
     return THEMES.flatMap(theme => 
       theme.dishes.map(dish => ({ 
@@ -19,6 +21,10 @@ const Catalog: React.FC = () => {
       }))
     );
   }, []);
+  const themesForChips = useMemo(
+    () => THEMES.map((t) => ({ id: t.id, title_zh: t.name })),
+    []
+  );
 
   const handleScrollToControls = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -43,6 +49,14 @@ const Catalog: React.FC = () => {
             imageSeed={888}
           />
         </div>
+
+        <section className="max-w-[1200px] mx-auto px-4 pt-6">
+          <ThemeChips
+            themes={themesForChips}
+            value=""
+            onChange={(id) => navigate(`/themes/${id}`)}
+          />
+        </section>
 
         {/* 作品展示區 */}
         <div className="mt-8">

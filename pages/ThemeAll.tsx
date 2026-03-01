@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { THEMES } from '../data/content';
 import { Home } from 'lucide-react';
 import NeutralHero from '../components/NeutralHero';
@@ -9,10 +9,16 @@ import ScrollToTop from '../components/ScrollToTop';
 import DishGrid from '../components/DishGrid';
 import DishCardUnified from '../components/DishCardUnified';
 import EmptyState from '../components/EmptyState';
+import ThemeChips from '../components/ThemeChips';
 
 const ThemeAll: React.FC = () => {
   const { themeId } = useParams<{ themeId: string }>();
+  const navigate = useNavigate();
   const theme = THEMES.find(t => t.id === themeId) || THEMES[0];
+  const themesForChips = useMemo(
+    () => THEMES.map((t) => ({ id: t.id, title_zh: t.name })),
+    []
+  );
 
   const displayDishes = useMemo(() => {
     return [...theme.dishes].sort((a, b) => {
@@ -48,6 +54,22 @@ const ThemeAll: React.FC = () => {
             imageSeed={theme.imageKey}
           />
         </div>
+
+        <section className="max-w-[1200px] mx-auto px-4 pt-6 flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
+          <div className="flex-1 min-w-0">
+            <ThemeChips
+              themes={themesForChips}
+              value={theme.id}
+              onChange={(id) => navigate(`/themes/${id}`)}
+            />
+          </div>
+          <Link
+            to="/catalog"
+            className="inline-flex items-center justify-center rounded-full px-5 py-2 text-[13px] font-bold tracking-wider border border-olive_divider text-text hover:text-ink hover:border-olive_border hover:bg-card/55 transition-all duration-300 shrink-0"
+          >
+            全料理
+          </Link>
+        </section>
 
         <div className="mt-8">
           {displayDishes.length > 0 ? (
