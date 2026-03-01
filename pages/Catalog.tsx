@@ -41,16 +41,6 @@ const Catalog: React.FC = () => {
       <SiteHeader />
 
       <main className="pt-14 lg:pt-16 flex-1">
-        <div className="sticky top-0 z-40 bg-bg/95 backdrop-blur border-b border-olive_divider/20 py-2">
-          <section className="max-w-[1200px] mx-auto px-4">
-            <ThemeChips
-              themes={themesForChips}
-              value=""
-              onChange={(id) => navigate(`/themes/${id}`)}
-            />
-          </section>
-        </div>
-
         <div className="pointer-events-none md:pointer-events-auto">
           <NeutralHero 
             title="完整作品目錄"
@@ -59,6 +49,16 @@ const Catalog: React.FC = () => {
             imageSeed={888}
           />
         </div>
+
+        <section className="sticky top-14 lg:top-16 z-40 bg-bg shadow-[0_1px_3px_rgba(79,88,59,0.1)] border-b border-olive_divider/10">
+          <div className="max-w-[1200px] mx-auto px-4 py-2">
+            <ThemeChips
+              themes={themesForChips}
+              value=""
+              onChange={(id) => navigate(`/themes/${id}`)}
+            />
+          </div>
+        </section>
 
         {/* 作品展示區 */}
         <div className="pt-4">

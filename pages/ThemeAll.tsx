@@ -55,8 +55,8 @@ const ThemeAll: React.FC = () => {
           />
         </div>
 
-        <div className="sticky top-0 z-40 bg-bg/95 backdrop-blur border-b border-olive_divider/20 py-2">
-          <section className="max-w-[1200px] mx-auto px-4 flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
+        <section className="sticky top-14 lg:top-16 z-40 bg-bg shadow-[0_1px_3px_rgba(79,88,59,0.1)] border-b border-olive_divider/10">
+          <div className="max-w-[1200px] mx-auto px-4 py-2 flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
             <div className="flex-1 min-w-0">
               <ThemeChips
                 themes={themesForChips}
@@ -70,8 +70,8 @@ const ThemeAll: React.FC = () => {
             >
               全料理
             </Link>
-          </section>
-        </div>
+          </div>
+        </section>
 
         <div className="pt-4">
           {displayDishes.length > 0 ? (
