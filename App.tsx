@@ -33,9 +33,11 @@ const App: React.FC = () => {
   const [activeThemeId, setActiveThemeId] = useState(THEMES[0].id);
   const [activeSection, setActiveSection] = useState('editor-note');
   const [isScrolling, setIsScrolling] = useState(false);
+  const [isThemeLocked, setIsThemeLocked] = useState(false);
   
   const scrollEndTimerRef = useRef<number | null>(null);
   const safetyUnlockRef = useRef<number | null>(null);
+  const themeLockTimerRef = useRef<number | null>(null);
 
   const currentTheme = THEMES.find(t => t.id === activeThemeId) || THEMES[0];
   const homeDishes = currentTheme.dishes.slice(0, 2);
@@ -73,6 +75,31 @@ const App: React.FC = () => {
     return () => {
       observer.disconnect();
       window.removeEventListener('resize', updateVars);
+    };
+  }, []);
+
+  // MVP: 捲動期間鎖定主題，僅避免 scroll 相關流程干擾主題切換
+  useEffect(() => {
+    const THEME_UNLOCK_DEBOUNCE_MS = 300;
+
+    const onScrollLockTheme = () => {
+      setIsThemeLocked(true);
+      if (themeLockTimerRef.current) {
+        window.clearTimeout(themeLockTimerRef.current);
+      }
+      themeLockTimerRef.current = window.setTimeout(() => {
+        setIsThemeLocked(false);
+        themeLockTimerRef.current = null;
+      }, THEME_UNLOCK_DEBOUNCE_MS);
+    };
+
+    window.addEventListener('scroll', onScrollLockTheme, { passive: true });
+    return () => {
+      window.removeEventListener('scroll', onScrollLockTheme);
+      if (themeLockTimerRef.current) {
+        window.clearTimeout(themeLockTimerRef.current);
+        themeLockTimerRef.current = null;
+      }
     };
   }, []);
 
@@ -136,6 +163,14 @@ const App: React.FC = () => {
   };
 
   const handleThemeChange = (themeId: string) => {
+    // TAB 點擊優先：先解除鎖，再切換主題
+    if (themeLockTimerRef.current) {
+      window.clearTimeout(themeLockTimerRef.current);
+      themeLockTimerRef.current = null;
+    }
+    if (isThemeLocked) {
+      setIsThemeLocked(false);
+    }
     setActiveThemeId(themeId);
     setTimeout(() => {
       handleNavigate('editor-note');
