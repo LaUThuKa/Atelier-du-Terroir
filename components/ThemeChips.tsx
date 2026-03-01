@@ -7,7 +7,7 @@ interface ThemeChipData {
 
 interface ThemeChipsProps {
   themes: ThemeChipData[];
-  value: string;
+  value?: string;
   onChange: (id: string) => void;
 }
 
@@ -26,9 +26,9 @@ const ThemeChips: React.FC<ThemeChipsProps> = ({ themes, value, onChange }) => {
               className={`
                 whitespace-nowrap px-5 py-2 rounded-full text-[13px] font-bold tracking-wider 
                 transition-all duration-300 active:scale-95 border shrink-0
-                ${isActive 
-                  ? 'bg-accent text-ink border-accent shadow-sm' 
-                  : 'bg-surface/10 border-olive_border text-olive_muted hover:border-olive_hint hover:text-ink hover:bg-surface/20'
+                ${isActive
+                  ? 'bg-card/60 text-ink border-accent ring-1 ring-accent/40 shadow-[0_6px_18px_rgba(var(--ink),0.08)]'
+                  : 'bg-card/35 border-olive_divider text-text hover:text-ink hover:border-olive_border hover:bg-card/55'
                 }
               `}
             >

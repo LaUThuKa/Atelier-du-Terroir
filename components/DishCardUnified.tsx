@@ -7,17 +7,21 @@ interface DishCardUnifiedProps {
   variant: 'catalog' | 'theme';
 }
 
+const TEL_HREF = "tel:+8860266044044";
+const MAIL_HREF = "mailto:moonlight76856e4@gmail.com";
+
 const DishCardUnified: React.FC<DishCardUnifiedProps> = ({ dish, variant }) => {
   const isCatalog = variant === 'catalog';
 
   // 1. 欄位適配 (Adapter Logic) - 依照 Ticket U05.1 規格優先取值
-  const imageSrc = dish.image 
-    || dish.image_url 
-    || dish.cover 
-    || dish.cover_url 
-    || dish.hero_image 
-    || dish.heroImage 
-    || null;
+  const base = (import.meta as any).env?.BASE_URL || "/";
+  const imageSrc = dish.image
+    || dish.image_url
+    || dish.cover
+    || dish.cover_url
+    || dish.hero_image
+    || dish.heroImage
+    || (dish.imageKey ? `${base}images/${dish.imageKey}.jpg` : null);
 
   const title = dish.title_zh 
     || dish.titleZh 
@@ -44,12 +48,14 @@ const DishCardUnified: React.FC<DishCardUnifiedProps> = ({ dish, variant }) => {
   // 若主要描述為空，則嘗試使用第二描述作為備案
   const finalDescription = description || description2 || "";
 
-  const tag = dish.badges?.[0] 
-    || dish.tags?.[0] 
-    || dish.tag_zh 
-    || dish.tag 
-    || "精選作品";
+  const badges: string[] =
+    (Array.isArray(dish.badges) && dish.badges.length > 0)
+      ? dish.badges
+      : (Array.isArray(dish.tags) && dish.tags.length > 0)
+        ? dish.tags
+        : [dish.tag_zh || dish.tag || "精選作品"];
 
+  const badgesToShow = badges.filter(Boolean).slice(0, 3);
   // 密度與視覺設定分岔
   const styles = {
     container: isCatalog ? "p-5" : "p-6",
@@ -57,11 +63,6 @@ const DishCardUnified: React.FC<DishCardUnifiedProps> = ({ dish, variant }) => {
     titleSize: isCatalog ? "text-xl" : "text-2xl",
     descClamp: isCatalog ? "line-clamp-3" : "line-clamp-4",
     minHeight: isCatalog ? "min-h-[3.75rem]" : "min-h-[5rem]" 
-  };
-
-  const handleAction = (e: React.MouseEvent) => {
-    e.preventDefault();
-    // 依據 Ticket 規範：不導外、不撥號，僅保留互動反饋
   };
 
   return (
@@ -86,9 +87,14 @@ const DishCardUnified: React.FC<DishCardUnifiedProps> = ({ dish, variant }) => {
         
         {/* 2. Tag (膠囊) */}
         <div className="absolute top-4 left-4 flex flex-wrap gap-2">
-          <span className="bg-bg/90 backdrop-blur-sm border border-olive_border text-olive_muted text-[10px] px-2.5 py-1 rounded-full font-bold shadow-sm tracking-wider uppercase">
-            {tag}
-          </span>
+          {badgesToShow.map((b, i) => (
+            <span
+              key={`${b}-${i}`}
+              className="bg-bg/90 backdrop-blur-sm border border-olive_border text-olive_muted text-[10px] px-2.5 py-1 rounded-full font-bold shadow-sm tracking-wider uppercase"
+            >
+              {b}
+            </span>
+          ))}
         </div>
       </div>
 
@@ -112,11 +118,24 @@ const DishCardUnified: React.FC<DishCardUnifiedProps> = ({ dish, variant }) => {
           {finalDescription}
         </p>
 
-        {/* Theme 變體專有的敘事標註 */}
+        {/* Theme 變體專有的乳香結構 */}
         {!isCatalog && (
-          <div className="mb-6 flex items-center gap-2 text-xs font-bold text-olive_hint tracking-wider">
-            <span className="w-1 h-1 rounded-full bg-accent" />
-            Curated Narrative
+          <div className="mb-6">
+            <h4 className="text-[11px] uppercase tracking-[0.3em] text-muted mb-5 font-bold">Lait Structure</h4>
+            <ul className="space-y-4 font-mono text-sm lg:text-[15px] text-text">
+              <li className="flex items-center gap-4">
+                <span className="w-2 h-2 rounded-full bg-accent"></span>
+                <span className="line-clamp-1">{dish.laitStructure?.base}</span>
+              </li>
+              <li className="flex items-center gap-4">
+                <span className="w-2 h-2 rounded-full bg-accent/60"></span>
+                <span className="line-clamp-1">{dish.laitStructure?.note}</span>
+              </li>
+              <li className="flex items-center gap-4">
+                <span className="w-2 h-2 rounded-full bg-accent/30"></span>
+                <span className="line-clamp-1">{dish.laitStructure?.finish}</span>
+              </li>
+            </ul>
           </div>
         )}
 
@@ -124,15 +143,15 @@ const DishCardUnified: React.FC<DishCardUnifiedProps> = ({ dish, variant }) => {
         <div className="mt-auto flex gap-3 pt-5 border-t border-olive_divider">
           <Button 
             className="flex-1 text-[11px] py-2.5 gap-1.5"
-            onClick={handleAction}
+            onClick={() => window.location.href = TEL_HREF}
           >
             <Phone size={14} />
-            品鑑作品
+            品鑑洽詢
           </Button>
           <Button 
             variant="ghost" 
             className="flex-1 text-[11px] py-2.5 gap-1"
-            onClick={handleAction}
+            onClick={() => window.location.href = MAIL_HREF}
           >
             合作邀約
             <ChevronRight size={14} />
