@@ -41,15 +41,6 @@ const Catalog: React.FC = () => {
       <SiteHeader />
 
       <main className="pt-14 lg:pt-16 flex-1">
-        <div className="pointer-events-none md:pointer-events-auto">
-          <NeutralHero 
-            title="完整作品目錄"
-            subtitle="以主題策展方式整理所有作品"
-            hint="使用下方標籤篩選作品類別"
-            imageSeed={888}
-          />
-        </div>
-
         <div className="sticky top-0 z-40 bg-bg/95 backdrop-blur border-b border-olive_divider/20 py-2">
           <section className="max-w-[1200px] mx-auto px-4">
             <ThemeChips
@@ -58,6 +49,15 @@ const Catalog: React.FC = () => {
               onChange={(id) => navigate(`/themes/${id}`)}
             />
           </section>
+        </div>
+
+        <div className="pointer-events-none md:pointer-events-auto">
+          <NeutralHero 
+            title="完整作品目錄"
+            subtitle="以主題策展方式整理所有作品"
+            hint="使用下方標籤篩選作品類別"
+            imageSeed={888}
+          />
         </div>
 
         {/* 作品展示區 */}
