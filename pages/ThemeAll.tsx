@@ -55,23 +55,25 @@ const ThemeAll: React.FC = () => {
           />
         </div>
 
-        <section className="max-w-[1200px] mx-auto px-4 pt-6 flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
-          <div className="flex-1 min-w-0">
-            <ThemeChips
-              themes={themesForChips}
-              value={theme.id}
-              onChange={(id) => navigate(`/themes/${id}`)}
-            />
-          </div>
-          <Link
-            to="/catalog"
-            className="inline-flex items-center justify-center rounded-full px-5 py-2 text-[13px] font-bold tracking-wider border border-olive_divider text-text hover:text-ink hover:border-olive_border hover:bg-card/55 transition-all duration-300 shrink-0"
-          >
-            全料理
-          </Link>
-        </section>
+        <div className="sticky top-0 z-40 bg-bg/95 backdrop-blur border-b border-olive_divider/20 py-2">
+          <section className="max-w-[1200px] mx-auto px-4 flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
+            <div className="flex-1 min-w-0">
+              <ThemeChips
+                themes={themesForChips}
+                value={theme.id}
+                onChange={(id) => navigate(`/themes/${id}`)}
+              />
+            </div>
+            <Link
+              to="/catalog"
+              className="inline-flex items-center justify-center rounded-full px-5 py-2 text-[13px] font-bold tracking-wider border border-olive_divider text-text hover:text-ink hover:border-olive_border hover:bg-card/55 transition-all duration-300 shrink-0"
+            >
+              全料理
+            </Link>
+          </section>
+        </div>
 
-        <div className="mt-8">
+        <div className="pt-4">
           {displayDishes.length > 0 ? (
             <DishGrid>
               {displayDishes.map((dish) => (

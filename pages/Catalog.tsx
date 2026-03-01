@@ -50,16 +50,18 @@ const Catalog: React.FC = () => {
           />
         </div>
 
-        <section className="max-w-[1200px] mx-auto px-4 pt-6">
-          <ThemeChips
-            themes={themesForChips}
-            value=""
-            onChange={(id) => navigate(`/themes/${id}`)}
-          />
-        </section>
+        <div className="sticky top-0 z-40 bg-bg/95 backdrop-blur border-b border-olive_divider/20 py-2">
+          <section className="max-w-[1200px] mx-auto px-4">
+            <ThemeChips
+              themes={themesForChips}
+              value=""
+              onChange={(id) => navigate(`/themes/${id}`)}
+            />
+          </section>
+        </div>
 
         {/* 作品展示區 */}
-        <div className="mt-8">
+        <div className="pt-4">
           {catalogDishes.length > 0 ? (
             <DishGrid>
               {catalogDishes.map((dish) => (
